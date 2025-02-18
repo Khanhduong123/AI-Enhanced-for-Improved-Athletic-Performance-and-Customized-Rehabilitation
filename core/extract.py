@@ -55,7 +55,7 @@ def extract_keypoints(video_path, output_json, candidate_name):
     print(f"Keypoints saved to {output_json}")
 
 def main():
-    video_folder = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\core\data\dummy_squat"  # Đổi tên thư mục video nếu cần
+    video_folder = r"D:\FPT\CN9\Thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\data\dummysquat"  # Đổi tên thư mục video nếu cần
     output_folder = "output_json"
     os.makedirs(output_folder, exist_ok=True)
 
