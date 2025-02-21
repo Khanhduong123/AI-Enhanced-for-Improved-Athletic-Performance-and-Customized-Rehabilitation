@@ -14,7 +14,7 @@ def json_to_numpy(json_file, class_name, target_fps=30, original_fps=60):
         return None, None
 
     num_keypoints = 33  # Mediapipe có 33 keypoints
-    keypoint_dim = 2  # Chỉ lấy tọa độ (x, y)
+    keypoint_dim = 3  # Chỉ lấy tọa độ (x, y, z)
 
     # Lấy mẫu lại dữ liệu để từ 60 FPS → 30 FPS
     step = original_fps // target_fps  # step = 60 // 30 = 2
