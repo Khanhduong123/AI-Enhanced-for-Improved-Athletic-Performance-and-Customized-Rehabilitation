@@ -15,7 +15,7 @@ def json_to_numpy(json_file, class_name, max_frames=None):
 
     num_frames = len(data)
     num_keypoints = 33  # Số lượng keypoints của Mediapipe
-    keypoint_dim = 2  # Chỉ lấy tọa độ (x, y), không dùng z
+    keypoint_dim = 3  # Chỉ lấy tọa độ (x, y), không dùng z
 
     keypoints_array = np.zeros((num_frames, num_keypoints, keypoint_dim), dtype=np.float32)
 
