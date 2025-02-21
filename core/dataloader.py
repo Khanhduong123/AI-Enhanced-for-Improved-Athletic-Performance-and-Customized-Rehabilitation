@@ -38,6 +38,7 @@ class KeypointDataset(Dataset):
         
         # Gán ID cho từng class (string → int)
         self.label_map = {class_name: idx for idx, class_name in enumerate(class_folders)}
+        print("Label map:", self.label_map)
 
         for class_name in class_folders:
             class_path = os.path.join(json_folder, class_name)
@@ -67,7 +68,7 @@ class KeypointDataset(Dataset):
 if __name__ =="__main__":
     # Khởi tạo dataset và dataloader với max_frames cố định
     json_folder = "../data/keypoints"
-    dataset = KeypointDataset(json_folder, max_frames=500)  # Định nghĩa số frame cố định
+    dataset = KeypointDataset(json_folder, max_frames=25)  # Định nghĩa số frame cố định
 
     batch_size = 4
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
