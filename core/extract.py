@@ -29,7 +29,8 @@ def extract_keypoints(video_path, output_json, candidate_name):
         ret, frame = cap.read()
         if not ret:
             break
-
+        
+        frame = cv2.resize(frame, (1280, 720))
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = pose.process(frame_rgb)
 
@@ -55,7 +56,7 @@ def extract_keypoints(video_path, output_json, candidate_name):
     print(f"Keypoints saved to {output_json}")
 
 def main():
-    video_folder = r"D:\FPT\CN9\Thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\data\dummysquat"  # Đổi tên thư mục video nếu cần
+    video_folder = r"../data/dataset/train/Bhujasana"  # Đổi tên thư mục video nếu cần
     output_folder = "output_json"
     os.makedirs(output_folder, exist_ok=True)
 
@@ -63,7 +64,7 @@ def main():
         print(f"❌ Error: Video folder '{video_folder}' not found.")
         return
 
-    video_files = [f for f in os.listdir(video_folder) if f.endswith((".mp4", ".avi", ".mov"))]
+    video_files = [f for f in os.listdir(video_folder) if f.endswith((".mp4", ".avi", ".mov,.MOV"))]
     
     if not video_files:
         print("❌ No video files found in the folder.")
