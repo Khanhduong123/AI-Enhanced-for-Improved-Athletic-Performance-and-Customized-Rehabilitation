@@ -37,7 +37,7 @@ def extract_keypoints(video_path, output_json, candidate_name):
             mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
             frame_data = {"frame": frame_idx, "name": candidate_name, "pose": {}}
             for i, landmark in enumerate(results.pose_landmarks.landmark):
-                frame_data["pose"][keypoint_names[i]] = [landmark.x, landmark.y]
+                frame_data["pose"][keypoint_names[i]] = [landmark.x, landmark.y, landmark.z]
             data.append(frame_data)
         
         cv2.imshow("Video", frame)
