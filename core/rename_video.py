@@ -29,13 +29,42 @@ def rename_videos(video_folder, rename_dict):
 
 def main():
     # Thư mục chứa video
-    video_folder = "D:\FPT\CN9\Thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\data\dummysquat" # không biết đổi làm sao để rút ngắn lại
+    video_folder = r"D:\FPT\CN9\Thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\data\raw_video\Oppo" # không biết đổi làm sao để rút ngắn lại
 
     # Dictionary cung cấp thông tin đổi tên
     rename_dict = {
-        1: ["001", "NguyenVanA", "DangChanRaXaNghiengMinh"],
-        2: ["002", "TranVanB", "DangChanRaXaNghiengMinh"],
-        3: ["003", "LeThiC", "DangChanRaXaNghiengMinh"]
+        1: ["1", "LePhanTheVinh", "Xemxaxemgan"],
+        2: ["1", "LePhanTheVinh", "Ngoithangbangtrengot"],
+        3: ["1", "LePhanTheVinh", "Dangchanraxanghiengminh"],
+        4: ["1", "LePhanTheVinh", "Sodatvuonlen"],
+        5: ["2", "NguyenCatTuong", "Xemxaxemgan"],
+        6: ["2", "NguyenCatTuong", "Ngoithangbangtrengot"],
+        7: ["2", "NguyenCatTuong", "Dangchanraxanghiengminh"],
+        8: ["2", "NguyenCatTuong", "Sodatvuonlen"],
+        9: ["3", "VuDucThienDung", "Xemxaxemgan"],
+        10: ["3", "VuDucThienDung", "Ngoithangbangtrengot"],
+        11: ["3", "VuDucThienDung", "Dangchanraxanghiengminh"],
+        12: ["3", "VuDucThienDung", "Sodatvuonlen"],
+        13: ["4", "NguyenNgocNhuThao", "Xemxaxemgan"],
+        14: ["4", "NguyenNgocNhuThao", "Ngoithangbangtrengot"],
+        15: ["4", "NguyenNgocNhuThao", "Dangchanraxanghiengminh"],
+        16: ["4", "NguyenNgocNhuThao", "Sodatvuonlen"],
+        17: ["5", "HoangVanLong", "Xemxaxemgan"],
+        18: ["5", "HoangVanLong", "Ngoithangbangtrengot"],
+        19: ["5", "HoangVanLong", "Dangchanraxanghiengminh"],
+        20: ["5", "HoangVanLong", "Sodatvuonlen"],
+        21: ["6", "VoLeThanhTuyen", "Xemxaxemgan"],
+        22: ["6", "VoLeThanhTuyen", "Ngoithangbangtrengot"],
+        23: ["6", "VoLeThanhTuyen", "Dangchanraxanghiengminh"],
+        24: ["6", "VoLeThanhTuyen", "Sodatvuonlen"],
+        25: ["7", "LuongHoangTrucVan", "Xemxaxemgan"],
+        26: ["7", "LuongHoangTrucVan", "Ngoithangbangtrengot"],
+        27: ["7", "LuongHoangTrucVan", "Dangchanraxanghiengminh"],
+        28: ["7", "LuongHoangTrucVan", "Sodatvuonlen"],
+        29: ["8", "DoanVanNghia", "Xemxaxemgan"],
+        30: ["8", "DoanVanNghia", "Ngoithangbangtrengot"],
+        31: ["8", "DoanVanNghia", "Dangchanraxanghiengminh"],
+        32: ["8", "DoanVanNghia", "Sodatvuonlen"],
     }
 
     if not os.path.exists(video_folder):
