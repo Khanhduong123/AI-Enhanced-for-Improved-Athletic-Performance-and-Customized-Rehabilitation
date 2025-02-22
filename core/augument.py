@@ -117,3 +117,6 @@ class Augumentation:
         
         interpolated_skeleton[-1] = self.skeleton[-1]
         return interpolated_skeleton
+
+if __name__ == "__main__":
+    pass
