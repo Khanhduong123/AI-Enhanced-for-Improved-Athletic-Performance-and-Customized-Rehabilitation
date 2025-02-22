@@ -72,7 +72,7 @@ def main():
         print("❌ No video files found in the folder.")
         return
 
-    for class_name in class_folders:
+    for class_name in output_class_folder:
         class_path = os.path.join(video_folder, class_name)
         output_class_folder = os.path.join(output_folder, class_name)
         os.makedirs(output_class_folder, exist_ok=True)  # Tạo folder output tương ứng với class
