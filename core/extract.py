@@ -21,16 +21,15 @@ def extract_keypoints(video_path, output_json, candidate_name):
     if not cap.isOpened():
         print(f"❌ Error: Unable to open video file {video_path}")
         return
-    
+
     data = []
     frame_idx = 0
-    
+
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:
             break
-        
-        frame = cv2.resize(frame, (1280, 720))
+
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = pose.process(frame_rgb)
 
@@ -40,7 +39,7 @@ def extract_keypoints(video_path, output_json, candidate_name):
             for i, landmark in enumerate(results.pose_landmarks.landmark):
                 frame_data["pose"][keypoint_names[i]] = [landmark.x, landmark.y, landmark.z]
             data.append(frame_data)
-        
+
         cv2.imshow("Video", frame)
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
@@ -56,9 +55,8 @@ def extract_keypoints(video_path, output_json, candidate_name):
     print(f"✅ Keypoints saved to {output_json}")
 
 def main():
-    video_folder = r"D:\FPT\CN9\Thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\data\dummysquat"  # Đổi tên thư mục video nếu cần
-    output_folder = "output_json"
-    os.makedirs(output_folder, exist_ok=True)
+    video_folder = "../data/raw_video"
+    output_folder = "../data/keypoints"
 
     if not os.path.exists(video_folder):
         print(f"❌ Error: Video folder '{video_folder}' not found.")
@@ -66,21 +64,22 @@ def main():
     else:
         print(f"📁 Processing videos in '{video_folder}'...")
 
-    video_files = [f for f in os.listdir(video_folder) if f.endswith((".mp4", ".avi", ".mov"))]
-    
-    if not video_files:
-        print("❌ No video files found in the folder.")
+    # Lấy danh sách folder class trong video_folder
+    class_folders = [folder for folder in os.listdir(video_folder) if os.path.isdir(os.path.join(video_folder, folder))]
+
+    if not class_folders:
+        print("❌ No class folders found in the data folder.")
         return
 
     for class_name in class_folders:
         class_path = os.path.join(video_folder, class_name)
         output_class_folder = os.path.join(output_folder, class_name)
         os.makedirs(output_class_folder, exist_ok=True)  # Tạo folder output tương ứng với class
-        
+
         print(f"📂 Processing class: {class_name}...")
 
         video_files = [f for f in os.listdir(class_path) if f.endswith((".mp4", ".avi", ".mov"))]
-        
+
         if not video_files:
             print(f"⚠️ No video files found in '{class_path}'. Skipping...")
             continue
