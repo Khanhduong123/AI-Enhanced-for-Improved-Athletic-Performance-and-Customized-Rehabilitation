@@ -4,7 +4,6 @@ import numpy as np
 import json
 import os
 
-
 def extract_skeleton_with_selected_frames(video_path, output_json, fps, action_name):
     if not os.path.exists(os.path.dirname(output_json)):
         os.makedirs(os.path.dirname(output_json))
@@ -43,7 +42,7 @@ def extract_skeleton_with_selected_frames(video_path, output_json, fps, action_n
             for i, lm in enumerate(results.pose_landmarks.landmark):
                 frame_keypoints["pose"][keypoint_names[i]] = [lm.x, lm.y, lm.z]
         else:
-            frame_keypoints["pose"] = {kp: [0, 0, 0] for kp in keypoint_names}  # Nếu không nhận diện được, gán 0
+            frame_keypoints["pose"] = {kp: [0, 0, 0] for kp in keypoint_names}  # Gán 0 nếu không nhận diện được
 
         skeleton_data.append(frame_keypoints)
 
@@ -52,25 +51,38 @@ def extract_skeleton_with_selected_frames(video_path, output_json, fps, action_n
     with open(output_json, "w") as f:
         json.dump(skeleton_data, f, indent=4)
 
-def process_videos(video_folder, output_folder, fps=10):
-    if not os.path.exists(video_folder):
-        print(f"Error: Video folder '{video_folder}' not found.")
-        return
-    
-    class_folders = [folder for folder in os.listdir(video_folder) if os.path.isdir(os.path.join(video_folder, folder))]
-    # class_folders =['Garland_Pose']
-    if not class_folders:
-        print("No class folders found in the dataset.")
+def process_videos(video_root_folder, output_root_folder, fps=10, public_only=True):
+    if not os.path.exists(video_root_folder):
+        print(f"Warning: Folder '{video_root_folder}' not found.")
         return
 
-    for class_name in class_folders:
-        class_path = os.path.join(video_folder, class_name)
-        output_class_folder = os.path.join(output_folder, class_name)
+    if public_only:
+        category = "public_data"
+        category_path = os.path.join(video_root_folder, category)
+        if not os.path.exists(category_path):
+            print(f"Warning: Folder '{category_path}' not found.")
+            return
+
+        subfolders = [os.path.join(category_path, cls) for cls in os.listdir(category_path) if os.path.isdir(os.path.join(category_path, cls))]
+    else:
+        category = "private_data"
+        category_path = os.path.join(video_root_folder, category)
+        if not os.path.exists(category_path):
+            print(f"Warning: Folder '{category_path}' not found.")
+            return
+
+        subfolders = []
+        for device in os.listdir(category_path):
+            device_path = os.path.join(category_path, device)
+            if os.path.isdir(device_path):
+                subfolders.extend([os.path.join(device_path, cls) for cls in os.listdir(device_path) if os.path.isdir(os.path.join(device_path, cls))])
+    
+    for class_path in subfolders:
+        class_name = os.path.basename(class_path)
+        output_class_folder = os.path.join(output_root_folder, category, class_name if public_only else os.path.relpath(class_path, category_path))
         os.makedirs(output_class_folder, exist_ok=True)
 
         video_files = [f for f in os.listdir(class_path) if f.endswith((".mp4", ".avi", ".mov"))]
-        #Thứ tự extract video.
-        #['sample1.mp4', 'sample10.mp4', 'sample11.mp4', 'sample12.mp4', 'sample13.mp4', 'sample14.mp4', 'sample15.mp4', 'sample16.mp4', 'sample17.mp4', 'sample18.mp4', 'sample19.mp4', 'sample2.mp4', 'sample20.mp4', 'sample21.mp4', 'sample22.mp4', 'sample23.mp4', 'sample24.mp4', 'sample25.mp4', 'sample3.mp4', 'sample4.mp4', 'sample5.mp4', 'sample6.mp4', 'sample7.mp4', 'sample8.mp4', 'sample9.mp4']
         for video_file in video_files:
             video_path = os.path.join(class_path, video_file)
             output_json = os.path.join(output_class_folder, f"{os.path.splitext(video_file)[0]}.json")
@@ -80,10 +92,9 @@ def process_videos(video_folder, output_folder, fps=10):
             extract_skeleton_with_selected_frames(video_path, output_json, fps, action_name)
 
 if __name__ == "__main__":
-    #Parameters   
+    # Parameters   
     FPS = 10
-    video_folder = "../data/raw_video"
-    output_folder = "../data/keypoints"
-    # fps = 10  # Frame per second
-
-    process_videos(video_folder, output_folder, FPS)
+    PUBLIC_ONLY = False # Đặt True nếu chỉ muốn xử lý public_data, False để xử lý private_data
+    video_root_folder = "../data/raw_video"  # Cấu trúc thư mục mới
+    output_root_folder = "../data/keypoints"
+    process_videos(video_root_folder, output_root_folder, FPS, PUBLIC_ONLY)
