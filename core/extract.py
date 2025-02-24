@@ -18,14 +18,25 @@ def extract_keypoints(video_path, output_json, candidate_name):
     ]
 
     cap = cv2.VideoCapture(video_path)
+    # TODO: Đừng có uncomment tất cá các dòng từ 
+    # video_fps = cap.get(cv2.CAP_PROP_FPS)
+    # total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    # selected_frames = np.arange(0, total_frames, step=int(video_fps / fps), dtype=int)
+
     if not cap.isOpened():
         print(f"❌ Error: Unable to open video file {video_path}")
         return
 
-    data = []
-    frame_idx = 0
+    data = [] # TODO: Sẽ thay đổi thành skeleton_data
+    frame_idx = 0 #TODO:  Sẽ thay đổi thành selected_frames
 
     while cap.isOpened():
+        # TODO: Dùng for idx để duyệt từng selected_frames
+        # for idx in selected_frames:
+        #     cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
+        #     ret, frame = cap.read()
+        #     if not ret:
+        #         break
         ret, frame = cap.read()
         if not ret:
             break
@@ -44,7 +55,7 @@ def extract_keypoints(video_path, output_json, candidate_name):
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
 
-        frame_idx += 1
+        frame_idx += 1#TODO: Sẽ xóa dòng này.
 
     cap.release()
     cv2.destroyAllWindows()
@@ -52,23 +63,23 @@ def extract_keypoints(video_path, output_json, candidate_name):
     with open(output_json, "w") as f:
         json.dump(data, f, indent=4)
 
-    print(f"✅ Keypoints saved to {output_json}")
+    print(f"Keypoints saved to {output_json}")
 
 def main():
     video_folder = "../data/raw_video"
     output_folder = "../data/keypoints"
 
     if not os.path.exists(video_folder):
-        print(f"❌ Error: Video folder '{video_folder}' not found.")
+        print(f"Error: Video folder '{video_folder}' not found.")
         return
     else:
-        print(f"📁 Processing videos in '{video_folder}'...")
+        print(f"Processing videos in '{video_folder}'...")
 
     # Lấy danh sách folder class trong video_folder
     class_folders = [folder for folder in os.listdir(video_folder) if os.path.isdir(os.path.join(video_folder, folder))]
 
     if not class_folders:
-        print("❌ No class folders found in the data folder.")
+        print("No class folders found in the data folder.")
         return
 
     for class_name in class_folders:
@@ -76,19 +87,19 @@ def main():
         output_class_folder = os.path.join(output_folder, class_name)
         os.makedirs(output_class_folder, exist_ok=True)  # Tạo folder output tương ứng với class
 
-        print(f"📂 Processing class: {class_name}...")
+        print(f"Processing class: {class_name}...")
 
         video_files = [f for f in os.listdir(class_path) if f.endswith((".mp4", ".avi", ".mov"))]
 
         if not video_files:
-            print(f"⚠️ No video files found in '{class_path}'. Skipping...")
+            print(f"No video files found in '{class_path}'. Skipping...")
             continue
 
         for video_file in video_files:
             video_path = os.path.join(class_path, video_file)
             output_json = os.path.join(output_class_folder, f"{os.path.splitext(video_file)[0]}.json")
             candidate_name = os.path.splitext(video_file)[0]
-            print(f"▶ Processing {video_file} in class {class_name}...")
+            print(f"Processing {video_file} in class {class_name}...")
             extract_keypoints(video_path, output_json, candidate_name)
 
 if __name__ == "__main__":
