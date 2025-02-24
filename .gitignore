@@ -1,4 +1,4 @@
 data/*
 core/output_json/*
-notebook/*
+# notebook/*
 data/dummysquat/*
