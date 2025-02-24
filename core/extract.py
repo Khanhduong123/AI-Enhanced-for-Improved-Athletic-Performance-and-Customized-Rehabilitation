@@ -79,9 +79,11 @@ def process_videos(video_folder, output_folder, fps=10):
             print(f"📌 Processing {video_file} in class {class_name}...")
             extract_skeleton_with_selected_frames(video_path, output_json, fps, action_name)
 
-if __name__ == "__main__":   
+if __name__ == "__main__":
+    #Parameters   
+    FPS = 10
     video_folder = "../data/raw_video"
     output_folder = "../data/keypoints"
-    fps = 10  # Frame per second
+    # fps = 10  # Frame per second
 
-    process_videos(video_folder, output_folder, fps)
+    process_videos(video_folder, output_folder, FPS)
