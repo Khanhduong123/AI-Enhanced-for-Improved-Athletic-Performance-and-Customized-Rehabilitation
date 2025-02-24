@@ -52,8 +52,6 @@ def extract_skeleton_with_selected_frames(video_path, output_json, fps, action_n
     with open(output_json, "w") as f:
         json.dump(skeleton_data, f, indent=4)
 
-    print(f"Processed {video_path} -> {output_json} | Extracted Frames: {len(skeleton_data)}")
-
 def process_videos(video_folder, output_folder, fps=10):
     if not os.path.exists(video_folder):
         print(f"Error: Video folder '{video_folder}' not found.")
