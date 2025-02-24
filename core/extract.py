@@ -55,8 +55,8 @@ def extract_keypoints(video_path, output_json, candidate_name):
     print(f"✅ Keypoints saved to {output_json}")
 
 def main():
-    video_folder = "../data/raw_video"
-    output_folder = "../data/keypoints"
+    video_folder = r"../data/raw_video"
+    output_folder = r"../data/keypoints"
 
     if not os.path.exists(video_folder):
         print(f"❌ Error: Video folder '{video_folder}' not found.")
