@@ -26,7 +26,7 @@ def json_to_numpy(json_file, class_name):
     return keypoints_array, class_name  # Trả về tên class dạng string
 
 # Dataset PyTorch
-class KeypointDataset(Dataset):
+class YogaDataset(Dataset):
     def __init__(self, json_folder, max_frames=100):
         self.data = []
         self.labels = []
@@ -68,7 +68,7 @@ class KeypointDataset(Dataset):
 if __name__ == "__main__":
     # Khởi tạo dataset và dataloader với max_frames cố định
     json_folder = "../data/keypoints"
-    dataset = KeypointDataset(json_folder, max_frames=100)  # Định nghĩa số frame cố định
+    dataset = YogaDataset(json_folder, max_frames=100)  # Định nghĩa số frame cố định
 
     batch_size = 4
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
