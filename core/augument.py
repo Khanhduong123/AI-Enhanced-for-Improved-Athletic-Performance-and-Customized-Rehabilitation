@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 import os
 import mediapipe as mp
-
+import json
 class Augumentation:
     def __init__(self, skeleton):
         self.skeleton = skeleton
@@ -117,6 +117,31 @@ class Augumentation:
         
         interpolated_skeleton[-1] = self.skeleton[-1]
         return interpolated_skeleton
+    
+    @staticmethod
+    def flip_keypoints_xy(input_json, output_json):
+        """
+        Đọc file JSON, lật keypoints theo trục X và Y, sau đó lưu lại file mới.
+        """
+        # Đọc dữ liệu từ file JSON
+        with open(input_json, "r") as file:
+            data = json.load(file)
+
+        flipped_data = []
+        
+        for frame in data:
+            flipped_frame = frame.copy()
+            flipped_frame["pose"] = {
+                key: [1 - value[0], 1 - value[1]]  # Lật cả x và y
+                for key, value in frame["pose"].items()
+            }
+            flipped_data.append(flipped_frame)
+
+        # Lưu dữ liệu mới vào file JSON
+        with open(output_json, "w") as file:
+            json.dump(flipped_data, file, indent=4)
+
+        print(f"✅ Keypoints flipped and saved to {output_json}")
 
 if __name__ == "__main__":
     pass
