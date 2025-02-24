@@ -141,7 +141,7 @@ class Augumentation:
         with open(output_json, "w") as file:
             json.dump(flipped_data, file, indent=4)
 
-        print(f"✅ Keypoints flipped and saved to {output_json}")
+        print(f"Keypoints flipped and saved to {output_json}")
 
 if __name__ == "__main__":
     pass
