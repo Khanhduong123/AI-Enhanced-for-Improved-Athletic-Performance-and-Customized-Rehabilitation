@@ -1,12 +1,16 @@
 import cv2
 import mediapipe as mp
+import numpy as np
 import json
 import os
 
-def extract_keypoints(video_path, output_json, candidate_name):
+
+def extract_skeleton_with_selected_frames(video_path, output_json, fps, action_name):
+    if not os.path.exists(os.path.dirname(output_json)):
+        os.makedirs(os.path.dirname(output_json))
+
     mp_pose = mp.solutions.pose
     pose = mp_pose.Pose()
-    mp_drawing = mp.solutions.drawing_utils
 
     keypoint_names = [
         "nose", "left_eye_inner", "left_eye", "left_eye_outer", "right_eye_inner",
@@ -18,89 +22,68 @@ def extract_keypoints(video_path, output_json, candidate_name):
     ]
 
     cap = cv2.VideoCapture(video_path)
-    # TODO: Đừng có uncomment tất cá các dòng từ 
-    # video_fps = cap.get(cv2.CAP_PROP_FPS)
-    # total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    # selected_frames = np.arange(0, total_frames, step=int(video_fps / fps), dtype=int)
+    video_fps = cap.get(cv2.CAP_PROP_FPS)
+    total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    selected_frames = np.arange(0, total_frames, step=int(video_fps / fps), dtype=int)
 
-    if not cap.isOpened():
-        print(f"❌ Error: Unable to open video file {video_path}")
-        return
+    skeleton_data = []
 
-    data = [] # TODO: Sẽ thay đổi thành skeleton_data
-    frame_idx = 0 #TODO:  Sẽ thay đổi thành selected_frames
-
-    while cap.isOpened():
-        # TODO: Dùng for idx để duyệt từng selected_frames
-        # for idx in selected_frames:
-        #     cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
-        #     ret, frame = cap.read()
-        #     if not ret:
-        #         break
+    for idx in selected_frames:
+        cap.set(cv2.CAP_PROP_POS_FRAMES, idx)
         ret, frame = cap.read()
         if not ret:
-            break
+            continue
 
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         results = pose.process(frame_rgb)
 
+        frame_keypoints = {"frame": int(idx), "name": action_name, "pose": {}}
+        
         if results.pose_landmarks:
-            mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
-            frame_data = {"frame": frame_idx, "name": candidate_name, "pose": {}}
-            for i, landmark in enumerate(results.pose_landmarks.landmark):
-                frame_data["pose"][keypoint_names[i]] = [landmark.x, landmark.y, landmark.z]
-            data.append(frame_data)
+            for i, lm in enumerate(results.pose_landmarks.landmark):
+                frame_keypoints["pose"][keypoint_names[i]] = [lm.x, lm.y, lm.z]
+        else:
+            frame_keypoints["pose"] = {kp: [0, 0, 0] for kp in keypoint_names}  # Nếu không nhận diện được, gán 0
 
-        cv2.imshow("Video", frame)
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
-
-        frame_idx += 1#TODO: Sẽ xóa dòng này.
+        skeleton_data.append(frame_keypoints)
 
     cap.release()
-    cv2.destroyAllWindows()
 
     with open(output_json, "w") as f:
-        json.dump(data, f, indent=4)
+        json.dump(skeleton_data, f, indent=4)
 
-    print(f"Keypoints saved to {output_json}")
+    print(f"Processed {video_path} -> {output_json} | Extracted Frames: {len(skeleton_data)}")
 
-def main():
-    video_folder = "../data/raw_video"
-    output_folder = "../data/keypoints"
-
+def process_videos(video_folder, output_folder, fps=10):
     if not os.path.exists(video_folder):
         print(f"Error: Video folder '{video_folder}' not found.")
         return
-    else:
-        print(f"Processing videos in '{video_folder}'...")
-
-    # Lấy danh sách folder class trong video_folder
+    
     class_folders = [folder for folder in os.listdir(video_folder) if os.path.isdir(os.path.join(video_folder, folder))]
-
+    # class_folders =['Garland_Pose']
     if not class_folders:
-        print("No class folders found in the data folder.")
+        print("No class folders found in the dataset.")
         return
 
     for class_name in class_folders:
         class_path = os.path.join(video_folder, class_name)
         output_class_folder = os.path.join(output_folder, class_name)
-        os.makedirs(output_class_folder, exist_ok=True)  # Tạo folder output tương ứng với class
-
-        print(f"Processing class: {class_name}...")
+        os.makedirs(output_class_folder, exist_ok=True)
 
         video_files = [f for f in os.listdir(class_path) if f.endswith((".mp4", ".avi", ".mov"))]
-
-        if not video_files:
-            print(f"No video files found in '{class_path}'. Skipping...")
-            continue
-
+        #Thứ tự extract video.
+        #['sample1.mp4', 'sample10.mp4', 'sample11.mp4', 'sample12.mp4', 'sample13.mp4', 'sample14.mp4', 'sample15.mp4', 'sample16.mp4', 'sample17.mp4', 'sample18.mp4', 'sample19.mp4', 'sample2.mp4', 'sample20.mp4', 'sample21.mp4', 'sample22.mp4', 'sample23.mp4', 'sample24.mp4', 'sample25.mp4', 'sample3.mp4', 'sample4.mp4', 'sample5.mp4', 'sample6.mp4', 'sample7.mp4', 'sample8.mp4', 'sample9.mp4']
         for video_file in video_files:
             video_path = os.path.join(class_path, video_file)
             output_json = os.path.join(output_class_folder, f"{os.path.splitext(video_file)[0]}.json")
-            candidate_name = os.path.splitext(video_file)[0]
-            print(f"Processing {video_file} in class {class_name}...")
-            extract_keypoints(video_path, output_json, candidate_name)
+            action_name = os.path.splitext(video_file)[0]  # Lấy tên video làm tên động tác
 
-if __name__ == "__main__":
-    main()
+            print(f"📌 Processing {video_file} in class {class_name}...")
+            extract_skeleton_with_selected_frames(video_path, output_json, fps, action_name)
+
+if __name__ == "__main__":   
+    video_folder = "../data/raw_video"
+    output_folder = "../data/keypoints"
+    fps = 10  # Frame per second
+
+    process_videos(video_folder, output_folder, fps)
