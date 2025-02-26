@@ -5,3 +5,4 @@ data/dummysquat/*
 core/__pycache__/*
 core/dataloader_fps.py
 core/__pycache__/*
+data_augment/*
