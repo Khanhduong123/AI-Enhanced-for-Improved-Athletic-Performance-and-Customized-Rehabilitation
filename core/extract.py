@@ -23,7 +23,7 @@ def extract_skeleton_with_selected_frames(video_path, output_json, fps, action_n
     cap = cv2.VideoCapture(video_path)
     video_fps = cap.get(cv2.CAP_PROP_FPS)
     total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    selected_frames = np.arange(0, total_frames, step=int(video_fps / fps), dtype=int)
+    selected_frames = np.arange(0, total_frames, step=int(video_fps // fps), dtype=int)
 
     skeleton_data = []
 
@@ -94,7 +94,7 @@ def process_videos(video_root_folder, output_root_folder, fps=10, public_only=Tr
 if __name__ == "__main__":
     # Parameters   
     FPS = 10
-    PUBLIC_ONLY = False # Đặt True nếu chỉ muốn xử lý public_data, False để xử lý private_data
+    PUBLIC_ONLY = True # Đặt True nếu chỉ muốn xử lý public_data, False để xử lý private_data
     video_root_folder = "../data/raw_video"  # Cấu trúc thư mục mới
     output_root_folder = "../data/keypoints"
     process_videos(video_root_folder, output_root_folder, FPS, PUBLIC_ONLY)
