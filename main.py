@@ -10,28 +10,38 @@ from core.trainer import Trainer
 from mlflow.models import infer_signature
 from torchinfo import summary
 import sys
+
+
+
 def main():
     #load data
     batch_size = 4
     num_epochs = 10
     learning_rate = 0.001
+    model_name = "gcn"
+    is_pretrain = False
 
-    json_folder = "data/keypoints/public_data"
+    json_folder_train = "data/keypoints/public_data/train"
+    json_folder_val = "data/keypoints/public_data/val"
+    checkpoint_dir =  f"checkpoints/{model_name}/{'pretrain' if is_pretrain else 'finetune'}"
     
-    dataset = YogaDataset(json_folder, max_frames=100)  # Định nghĩa số frame cố định
-    trainloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    trainset = YogaDataset(json_folder_train, max_frames=100)  # Định nghĩa số frame cố định
+    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
+
+    valset = YogaDataset(json_folder_val, max_frames=100)  # Định nghĩa số frame cố định
+    validloader = DataLoader(valset, batch_size=batch_size, shuffle=False)
 
 
     exp_id = create_experiment(
-        name="pytorch_test",
-        artifact_location="pytorch_test_artifact",
+        name="Thesis25",
+        artifact_location="Thesis_25_artifact", 
         tags={"env": "dev", "version": "1.0.0"}
     )
 
     model = SPOTER(num_classes=4, hidden_dim=72)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    trainer = Trainer(model,optimizer,criterion,None)
+    trainer = Trainer(model,optimizer,criterion,None,model_name,is_pretrain)
 
 
     with mlflow.start_run(run_name="Pytorch_test", experiment_id=exp_id,log_system_metrics=True) as run:
@@ -52,7 +62,7 @@ def main():
         mlflow.log_artifact("summary/model_summary.txt")
 
         try:
-            trainer.fit(trainloader,None ,num_epochs)
+            trainer.fit(trainloader,validloader ,num_epochs,checkpoint_dir)
             mlflow.pytorch.log_model(model, "models", signature=signature)
         except KeyboardInterrupt:
             sys.exit()
