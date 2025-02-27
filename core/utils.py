@@ -1,5 +1,8 @@
 import os
+
 import json
+import mlflow
+from typing import Any
 import numpy as np
 
 def load_json(json_path):
@@ -37,3 +40,18 @@ def numpy_to_json(numpy_data, original_json):
             new_frame["pose"][key] = numpy_data[i][j].tolist()
         new_json.append(new_frame)
     return new_json
+
+def create_experiment(name: str, artifact_location: str, tags: dict[str, Any]):
+    
+    try:
+        exp_id = mlflow.create_experiment(
+            name=name,
+            artifact_location=artifact_location,
+            tags=tags
+        )
+    
+    except Exception as e:
+        print(f"Experiment {name} already exists")
+        exp_id = mlflow.get_experiment_by_name(name).experiment_id
+
+    return exp_id
