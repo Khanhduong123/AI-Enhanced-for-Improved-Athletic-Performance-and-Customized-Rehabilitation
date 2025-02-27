@@ -106,8 +106,23 @@ class YogaGCN(nn.Module):
         return x
    
 
-def model(cf):
-    if cf.model_name == 'spoter':
-        return SPOTER(cf.num_classes, cf.hidden_dim)
+def get_model(cf):
+    """
+    Hàm trả về model dựa trên `cf.model_name` và `cf.pretrained`
+    """
+    if cf.model_name == "spoter":
+        return SPOTER(
+            num_classes=cf.num_classes, 
+            hidden_dim=cf.hidden_dim, 
+            num_heads=cf.num_heads, 
+            encoder_layers=cf.encoder_layers, 
+            decoder_layers=cf.decoder_layers
+        )
+    elif cf.model_name == "gcn":
+        return YogaGCN(
+            in_channels=cf.in_channels, 
+            hidden_dim=cf.out_channels, 
+            num_classes=cf.num_classes
+        )
     else:
-        pass
+        raise ValueError(f"Không tìm thấy model_name phù hợp: {cf.model_name}")
