@@ -8,3 +8,4 @@ core/__pycache__/*
 mlruns/*
 pytorch_test_artifact/*
 summary/*
+data_augment/*
