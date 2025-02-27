@@ -1,0 +1,35 @@
+data:
+  is_public: true  # Public hoặc Private
+  max_frame: 100    # Số frame tối đa
+  batch_size: 4     # Kích thước batch
+
+model:
+  model_name: "spoter"  # "spoter" hoặc "gcn"
+  pretrained: true      # Pretrained hay không
+  finetune: false       # Finetune hay không
+
+  pretrain_config:
+    spoter: 
+      hidden_dim: 72
+      num_heads: 9
+      encoder_layers: 6
+      decoder_layers: 6
+      num_classes: 4
+
+    gcn:
+      in_channels: 3
+      hidden_dim: 128
+      num_classes: 4
+
+  finetune_config:
+    spoter:
+      hidden_dim: 72
+      num_heads: 9
+      encoder_layers: 6
+      decoder_layers: 6
+      num_classes: 4
+
+    gcn:
+      in_channels: 3
+      hidden_dim: 128
+      num_classes: 4
