@@ -6,6 +6,8 @@ core/__pycache__/*
 core/dataloader_fps.py
 core/__pycache__/*
 mlruns/*
-pytorch_test_artifact/*
+Thesis_25_artifact/*
+summary/*
+checkpoints/*
 summary/*
 data_augment/*
