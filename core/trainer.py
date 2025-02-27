@@ -1,3 +1,4 @@
+import os
 import sys
 import time
 import torch
@@ -7,7 +8,7 @@ import mlflow
 
 
 class Trainer:
-    def __init__(self, model, optimizer, criterion, scheduler= None):
+    def __init__(self, model, optimizer, criterion,scheduler= None,model_name="spoter",is_pretrain=True):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = model.to(self.device)
         self.optimizer = optimizer
@@ -16,46 +17,33 @@ class Trainer:
         self.best_acc = 0
         self.all_preds = []
         self.all_labels = []
+        self.is_pretrain = is_pretrain
+        self.model_name = model_name
         self.cache = {
             "train_loss": [],
             "train_acc": [],
-            "val_loss": [],
-            "val_acc": [],
+            "valid_loss": [],
+            "valid_acc": [],
             "lr": []
         }
-    
 
-    # def get_edge_index(self):
-    #     """
-    #     Trả về ma trận kề (edge_index) cho 33 keypoints của Mediapipe.
-    #     """
-    #     edges = [
-    #         (0, 1), (1, 2), (2, 3), (3, 7),  # Tay trái
-    #         (0, 4), (4, 5), (5, 6), (6, 8),  # Tay phải
-    #         (9, 10), (11, 12),  # Hông
-    #         (11, 13), (13, 15), (15, 17), (15, 19), (15, 21),  # Chân trái
-    #         (12, 14), (14, 16), (16, 18), (16, 20), (16, 22),  # Chân phải
-    #         (11, 23), (12, 24), (23, 24),  # Kết nối hông
-    #         (23, 25), (25, 27), (27, 29), (29, 31),  # Chân trái
-    #         (24, 26), (26, 28), (28, 30), (30, 32)   # Chân phải
-    #     ]
-    #     edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()  # (2, num_edges)
-    #     return edge_index
-
-    def save_checkpoint(self, path):
-        if not self.cache["val_acc"]:
+    def save_checkpoint(self, checkpoint_dir):
+        if not self.cache["valid_acc"]:
             return
         
-        acc = self.cache["val_acc"][-1]["accuracy"]
+        acc = self.cache["valid_acc"][-1]["accuracy"]
         if acc >= self.best_acc:
             self.best_acc = acc
+
+            os.makedirs(checkpoint_dir, exist_ok=True)
+            checkpoint_path = os.path.join(checkpoint_dir, "best_checkpoint.pt")
             params = {
                 'model': self.model.state_dict(),
                 'optimizer': self.optimizer.state_dict(),
                 'scheduler': self.scheduler.state_dict() if self.scheduler is not None else None,
                 'cache': self.cache
             }
-            torch.save(params, path)
+            torch.save(params, checkpoint_path)
         print("[+] Save checkpoint successfully!")
     
 
@@ -134,7 +122,7 @@ class Trainer:
         self.cache[f"{fw_model}_acc"].append(acc)
     
 
-    def fit(self, trainloader, valid_loader= None, epochs=2 , checkpoint='checkpoint.pt'):
+    def fit(self, trainloader, valid_loader= None, epochs=2 , checkpoint=None):
         print(f"Running on: {torch.cuda.get_device_name(torch.cuda.current_device())}")
         print(f"Total update step: {len(trainloader) * epochs}")
 
@@ -182,4 +170,5 @@ class Trainer:
             logs.append(f"\t=> Learning Rate: {current_lr} - Time: {timedelta(seconds=int(total_time))}/step\n")
             print("\n".join(logs))
             self.cache["lr"].append(current_lr)
+            # checkpoint = os.path.join(self.checkpoint_dir, "best_checkpoint.pt")
             self.save_checkpoint(checkpoint)      
