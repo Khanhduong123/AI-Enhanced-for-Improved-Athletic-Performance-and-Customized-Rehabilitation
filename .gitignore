@@ -9,3 +9,5 @@ mlruns/*
 Thesis_25_artifact/*
 summary/*
 checkpoints/*
+summary/*
+data_augment/*
