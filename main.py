@@ -10,7 +10,10 @@ from core.trainer import Trainer
 from mlflow.models import infer_signature
 from torchinfo import summary
 from config import Config
+from core.visualize import plot_confusion_matrix
 import sys
+import os
+from sklearn.metrics import confusion_matrix
 
 
 
@@ -45,7 +48,7 @@ def main():
     trainer = Trainer(model,optimizer,criterion,None,config.get('model.model_name'),bool(config.get('model.pretrained')))
 
 
-    with mlflow.start_run(run_name="Pytorch_test", experiment_id=exp_id,log_system_metrics=True) as run:
+    with mlflow.start_run(run_name=config.get("mlflow.run_name"), experiment_id=exp_id,log_system_metrics=True) as run:
         params = {
             "epochs": config.get("train.num_epochs"),
             "learning_rate": config.get("train.lr"),
@@ -83,6 +86,9 @@ def main():
 
         try:
             trainer.fit(trainloader,validloader,config.get("train.num_epochs"),checkpoint_dir)
+            cm = confusion_matrix(trainer.all_labels, trainer.all_preds)
+            os.makedirs("image",exist_ok=True)
+            plot_confusion_matrix(cm,trainset,os.path.abspath("image/confusion_matrix.png"))
             mlflow.pytorch.log_model(model, "models", signature=signature)
         except KeyboardInterrupt:
             sys.exit()   
