@@ -39,6 +39,7 @@ class YogaDataset(Dataset):
 
         # Gán ID cho từng class (string → int)
         self.label_map = {class_name: idx for idx, class_name in enumerate(class_folders)}
+        self.classes = self.classes = list(self.label_map.keys())
         print("Label map:", self.label_map)
 
         for class_name in class_folders:
