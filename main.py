@@ -17,12 +17,20 @@ import sys
 def main(): 
     config = Config()
     checkpoint_dir =  f"checkpoints/{str(config.get('model.model_name'))}/{'pretrain' if bool(config.get('model.pretrained')) else 'finetune'}"
-    
-    trainset = YogaDataset(config.get('data.json_path_train'), max_frames=config.get('data.max_frame'))  # Định nghĩa số frame cố định
-    trainloader = DataLoader(trainset, batch_size=config.get('data.batch_size'), shuffle=True)
 
-    valset = YogaDataset(config.get('data.json_path_val'), max_frames=config.get('data.max_frame'))  # Định nghĩa số frame cố định
-    validloader = DataLoader(valset, batch_size=config.get('data.batch_size'), shuffle=False)
+    if bool(config.get('data.is_public')) == True:
+    
+        trainset = YogaDataset(str(config.get('data.json_public_path_train')), max_frames=config.get('data.max_frame'),augment=bool(config.get("data.augmentation")))  # Định nghĩa số frame cố định
+        trainloader = DataLoader(trainset, batch_size=config.get('data.batch_size'), shuffle=True)
+
+        valset = YogaDataset(str(config.get('data.json_public_path_val')), max_frames=config.get('data.max_frame'))  # Định nghĩa số frame cố định
+        validloader = DataLoader(valset, batch_size=config.get('data.batch_size'), shuffle=False)
+    else:
+        trainset = YogaDataset(str(config.get('data.json_private_path_train')), max_frames=config.get('data.max_frame'),augment=bool(config.get("data.augmentation")))  # Định nghĩa số frame cố định
+        trainloader = DataLoader(trainset, batch_size=config.get('data.batch_size'), shuffle=True)
+
+        valset = YogaDataset(str(config.get('data.json_private_path_val')), max_frames=config.get('data.max_frame'))  # Định nghĩa số frame cố định
+        validloader = DataLoader(valset, batch_size=config.get('data.batch_size'), shuffle=False)
 
 
     exp_id = create_experiment(
@@ -46,9 +54,9 @@ def main():
             "optimizer": optimizer.__class__.__name__,
         }
         if config.get('model.model_name') == "spoter":
-
             sample_inputs, _ = next(iter(trainloader))
             X = sample_inputs.to(device = "cuda" if torch.cuda.is_available() else "cpu")
+            signature = infer_signature(X.cpu().numpy(), model(X).detach().cpu().numpy())
         
         elif config.get('model.model_name') == "gcn":
             sample_inputs, _ = next(iter(trainloader))
@@ -61,21 +69,23 @@ def main():
             output = model(X, edge_index, batch).detach()
             signature = infer_signature(X.cpu().numpy(), output.cpu().numpy())
 
-            
-        
         mlflow.log_params(params)
-        with open("summary/model_summary.txt", "w", encoding="utf-8") as f:
-            f.write(str(summary(model)))
-        mlflow.log_artifact("summary/model_summary.txt")
+        
+        model_name = config.get("model.model_name")
+        summary_path = f"summary/model_{model_name}_summary.txt"
+
+        if model_name in ["spoter", "gcn"]:
+            with open(summary_path, "w", encoding="utf-8") as f:
+                f.write(str(summary(model)))
+
+            # Log file summary vào MLflow
+            mlflow.log_artifact(summary_path)
 
         try:
             trainer.fit(trainloader,validloader,config.get("train.num_epochs"),checkpoint_dir)
             mlflow.pytorch.log_model(model, "models", signature=signature)
         except KeyboardInterrupt:
-            sys.exit()
-
-
-    
+            sys.exit()   
 
 if __name__ == "__main__":
     main()
