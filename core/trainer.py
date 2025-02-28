@@ -113,6 +113,7 @@ class Trainer:
                 if self.model_name == 'spoter':
                     #TODO: if spoter model ==> self.model(inputs).squeeze(1)  else: outputs = model(X_batch, edge_index, batch)
                     outputs = self.model(inputs).squeeze(1) 
+                    print
                     loss = self.criteria(outputs, labels)
                     preds = outputs.argmax(dim=1)                
                 
@@ -207,5 +208,4 @@ class Trainer:
             logs.append(f"\t=> Learning Rate: {current_lr} - Time: {timedelta(seconds=int(total_time))}/step\n")
             print("\n".join(logs))
             self.cache["lr"].append(current_lr)
-            # checkpoint = os.path.join(self.checkpoint_dir, "best_checkpoint.pt")
             self.save_checkpoint(checkpoint)      
