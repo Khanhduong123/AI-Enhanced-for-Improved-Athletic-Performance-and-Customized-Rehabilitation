@@ -51,13 +51,13 @@ class SPOTERTransformerDecoderLayer(nn.TransformerDecoderLayer):
 
 
 class SPOTER(nn.Module):
-    def __init__(self, num_classes, hidden_dim, num_heads, encoder_layers, decoder_layers):
+    def __init__(self, num_classes, hidden_dim,max_frame ,num_heads, encoder_layers, decoder_layers):
         """
         Implementation of the SPOTER (Sign POse-based TransformER) architecture for sign language recognition from sequence
         of skeletal data.
         """
         super().__init__()
-        self.input_projection = nn.Linear(100 * 33 * 3, hidden_dim)  # 9900 → 54
+        self.input_projection = nn.Linear(max_frame * 33 * 3, hidden_dim)  # 9900 → 54
 
         self.row_embed = nn.Parameter(torch.rand(50, hidden_dim))
         self.pos = nn.Parameter(torch.cat([self.row_embed[0].unsqueeze(0).repeat(1, 1, 1)], dim=-1).flatten(0, 1).unsqueeze(0))
@@ -174,7 +174,8 @@ def get_model(cf):
     if model_name == "spoter":
         model = SPOTER(
             num_classes=int(cf.get('model.pretrain_config.spoter.num_classes')), 
-            hidden_dim=int(cf.get('model.pretrain_config.spoter.hidden_dim')), 
+            hidden_dim=int(cf.get('model.pretrain_config.spoter.hidden_dim')),
+            max_frame = int(cf.get('data.max_frame')),
             num_heads=int(cf.get('model.pretrain_config.spoter.num_heads')), 
             encoder_layers=int(cf.get('model.pretrain_config.spoter.encoder_layers')), 
             decoder_layers=int(cf.get('model.pretrain_config.spoter.decoder_layers'))
