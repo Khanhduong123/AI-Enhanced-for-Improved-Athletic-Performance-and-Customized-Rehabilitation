@@ -14,6 +14,4 @@ class Config:
 
 
 if __name__ == "__main__":
-    # pass
-    config=  Config("config/hyperparams.yaml")
-    print(type(config.get("data.json_path_train")))
+    pass
