@@ -13,12 +13,7 @@ from config import Config
 import sys
 
 
- #load data
-# batch_size = 4
-# num_epochs = 10
-# learning_rate = 0.001
-# model_name = "gcn"
-# is_pretrain = False
+
 def main(): 
     config = Config()
     checkpoint_dir =  f"checkpoints/{str(config.get('model.model_name'))}/{'pretrain' if bool(config.get('model.pretrained')) else 'finetune'}"
