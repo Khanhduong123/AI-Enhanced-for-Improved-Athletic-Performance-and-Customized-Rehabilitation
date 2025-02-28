@@ -5,4 +5,7 @@ data/dummysquat/*
 core/__pycache__/*
 core/dataloader_fps.py
 core/__pycache__/*
+mlruns/*
+pytorch_test_artifact/*
+summary/*
 data_augment/*
