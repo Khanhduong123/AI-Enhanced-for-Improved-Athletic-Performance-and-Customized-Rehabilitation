@@ -1,6 +1,5 @@
 import copy
 import torch
-
 import torch.nn as nn
 from typing import Optional
 from dataclasses import dataclass
@@ -10,7 +9,6 @@ import torch_geometric.nn as gnn
 def _get_clones(mod, n):
     return nn.ModuleList([copy.deepcopy(mod) for _ in range(n)])
 
-# @dataclass
 class SelfAttention(nn.Module):
     batch_first: bool = True
 
@@ -47,24 +45,22 @@ class SPOTERTransformerDecoderLayer(nn.TransformerDecoderLayer):
         tgt2 = self.linear2(self.dropout(self.activation(self.linear1(tgt))))
         tgt = tgt + self.dropout3(tgt2)
         tgt = self.norm3(tgt)
-
         return tgt
 
 
 class SPOTER(nn.Module):
-    def __init__(self, num_classes, hidden_dim):
+    def __init__(self, num_classes, hidden_dim, num_heads, encoder_layers, decoder_layers):
         """
         Implementation of the SPOTER (Sign POse-based TransformER) architecture for sign language recognition from sequence
         of skeletal data.
         """
         super().__init__()
-
         self.input_projection = nn.Linear(100 * 33 * 3, hidden_dim)  # 9900 → 54
 
         self.row_embed = nn.Parameter(torch.rand(50, hidden_dim))
         self.pos = nn.Parameter(torch.cat([self.row_embed[0].unsqueeze(0).repeat(1, 1, 1)], dim=-1).flatten(0, 1).unsqueeze(0))
         self.class_query = nn.Parameter(torch.rand(1, hidden_dim))
-        self.transformer = nn.Transformer(hidden_dim, 9, 6, 6) #hidden_dim, num_heads, layer_encoder, layer_decoder
+        self.transformer = nn.Transformer(hidden_dim, num_heads, encoder_layers, decoder_layers) #hidden_dim, num_heads, layer_encoder, layer_decoder
         self.linear_class = nn.Linear(hidden_dim, num_classes)
 
         custom_decoder_layer = SPOTERTransformerDecoderLayer(self.transformer.d_model, self.transformer.nhead, 2048, 0.1, "relu")
@@ -87,22 +83,21 @@ class SPOTER(nn.Module):
 
 
 class YogaGCN(nn.Module):
-    def __init__(self, in_channels=3, hidden_dim=64, num_classes=4):
+    def __init__(self, in_channels=3, hidden_dim=128, num_classes=4):
         super(YogaGCN, self).__init__()
         self.conv1 = gnn.GCNConv(in_channels, hidden_dim)
         self.conv2 = gnn.GCNConv(hidden_dim, hidden_dim)
         self.conv3 = gnn.GCNConv(hidden_dim, hidden_dim)
+        self.conv4 = gnn.GCNConv(hidden_dim, hidden_dim)  # Thêm một lớp nữa
         self.fc = nn.Linear(hidden_dim, num_classes)
 
     def forward(self, x, edge_index, batch):
         x = self.conv1(x, edge_index).relu()
         x = self.conv2(x, edge_index).relu()
         x = self.conv3(x, edge_index).relu()
-
-        # Pooling giữ đúng batch_size
-        x = gnn.global_mean_pool(x, batch)  # (batch_size, hidden_dim)
-
-        x = self.fc(x)  # (batch_size, num_classes)
+        x = self.conv4(x, edge_index).relu()
+        x = gnn.global_mean_pool(x, batch)
+        x = self.fc(x)
         return x
    
 
@@ -110,19 +105,21 @@ def get_model(cf):
     """
     Hàm trả về model dựa trên `cf.model_name` và `cf.pretrained`
     """
-    if cf.model_name == "spoter":
+    model_name = cf.get('model.model_name')
+
+    if model_name == "spoter":
         return SPOTER(
-            num_classes=cf.num_classes, 
-            hidden_dim=cf.hidden_dim, 
-            num_heads=cf.num_heads, 
-            encoder_layers=cf.encoder_layers, 
-            decoder_layers=cf.decoder_layers
+            num_classes=int(cf.get('model.pretrain_config.spoter.num_classes')), 
+            hidden_dim=int(cf.get('model.pretrain_config.spoter.hidden_dim')), 
+            num_heads=int(cf.get('model.pretrain_config.spoter.num_heads')), 
+            encoder_layers=int(cf.get('model.pretrain_config.spoter.encoder_layers')), 
+            decoder_layers=int(cf.get('model.pretrain_config.spoter.decoder_layers'))
         )
-    elif cf.model_name == "gcn":
+    elif model_name == "gcn":
         return YogaGCN(
-            in_channels=cf.in_channels, 
-            hidden_dim=cf.out_channels, 
-            num_classes=cf.num_classes
+            in_channels=int(cf.get('model.pretrain_config.gcn.in_channels')), 
+            hidden_dim=int(cf.get('model.pretrain_config.gcn.hidden_dim')), 
+            num_classes=int(cf.get('model.pretrain_config.gcn.num_classes'))
         )
     else:
-        raise ValueError(f"Không tìm thấy model_name phù hợp: {cf.model_name}")
+        raise ValueError(f"Không tìm thấy model phù hợp: {model_name}")
