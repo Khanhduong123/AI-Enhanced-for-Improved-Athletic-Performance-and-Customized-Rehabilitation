@@ -4,7 +4,7 @@ data:
   json_private_path_train: "data/keypoints/private_data/train"
   json_private_path_val: "data/keypoints/private_data/val"
   augmentation: false
-  is_public: false # Public is true hoặc Private is false
+  is_public: true # Public is true hoặc Private is false
   max_frame: 100    # Số frame tối đa
   batch_size: 4     # Kích thước batch
 
@@ -15,7 +15,7 @@ mlflow:
 
 model:
   model_name: "spoter"  # "spoter" hoặc "gcn"
-  pretrained: false    # Pretrained is true hay is false
+  pretrained: true   # Pretrained is true hay is false
 
   pretrain_config:
     spoter:
