@@ -11,3 +11,4 @@ summary/*
 checkpoints/*
 summary/*
 data_augment/*
+__pycache__/*

@@ -27,6 +27,23 @@ class Trainer:
             "lr": []
         }
 
+    def get_edge_index(self):
+        """
+        Trả về ma trận kề (edge_index) cho 33 keypoints của Mediapipe.
+        """
+        edges = [
+            (0, 1), (1, 2), (2, 3), (3, 7),  # Tay trái
+            (0, 4), (4, 5), (5, 6), (6, 8),  # Tay phải
+            (9, 10), (11, 12),  # Hông
+            (11, 13), (13, 15), (15, 17), (15, 19), (15, 21),  # Chân trái
+            (12, 14), (14, 16), (16, 18), (16, 20), (16, 22),  # Chân phải
+            (11, 23), (12, 24), (23, 24),  # Kết nối hông
+            (23, 25), (25, 27), (27, 29), (29, 31),  # Chân trái
+            (24, 26), (26, 28), (28, 30), (30, 32)   # Chân phải
+        ]
+        edge_index = torch.tensor(edges, dtype=torch.long).t().contiguous()  # (2, num_edges)
+        return edge_index
+
     def save_checkpoint(self, checkpoint_dir):
         if not self.cache["valid_acc"]:
             return
@@ -84,6 +101,7 @@ class Trainer:
 
         cache = {'loss': [], 'acc': []}
         N = len(dataloader)
+        edge_index = self.get_edge_index().to(self.device) if self.model_name == 'gcn' else None
         for i , data in enumerate(dataloader, 1):
             if fw_model == 'train':
                 self.optimizer.zero_grad()
@@ -92,10 +110,30 @@ class Trainer:
             inputs, labels = inputs.to(self.device), labels.to(self.device)
 
             with torch.set_grad_enabled(fw_model == 'train'):
-                #TODO: if spoter model ==> self.model(inputs).squeeze(1)  else: outputs = model(X_batch, edge_index, batch)
-                outputs = self.model(inputs).squeeze(1) 
-                loss = self.criteria(outputs, labels)
-                preds = outputs.argmax(dim=1)
+                if self.model_name == 'spoter':
+                    #TODO: if spoter model ==> self.model(inputs).squeeze(1)  else: outputs = model(X_batch, edge_index, batch)
+                    outputs = self.model(inputs).squeeze(1) 
+                    print
+                    loss = self.criteria(outputs, labels)
+                    preds = outputs.argmax(dim=1)                
+                
+                elif self.model_name == 'gcn':
+                    batch_size, num_frames, num_keypoints, keypoint_dim = inputs.shape
+                    inputs = inputs.view(batch_size * num_frames * num_keypoints, keypoint_dim)
+                    
+                    # Tạo batch tensor phù hợp
+                    batch = torch.arange(batch_size, device=self.device).repeat_interleave(num_frames * num_keypoints)
+                    
+                    # Đảm bảo edge_index không bị None
+                    if edge_index is None:
+                        raise ValueError("Edge index is required for GCN model but was not provided.")
+                    
+                    outputs = self.model(inputs, edge_index, batch)
+                    loss = self.criteria(outputs, labels.long())
+                    preds = outputs.argmax(dim=1)
+                else:
+                    raise ValueError(f"Model name {self.model_name} is not supported.")
+
                 self.all_preds.extend(preds.cpu().tolist())
                 self.all_labels.extend(labels.cpu().tolist())
 
@@ -170,5 +208,4 @@ class Trainer:
             logs.append(f"\t=> Learning Rate: {current_lr} - Time: {timedelta(seconds=int(total_time))}/step\n")
             print("\n".join(logs))
             self.cache["lr"].append(current_lr)
-            # checkpoint = os.path.join(self.checkpoint_dir, "best_checkpoint.pt")
             self.save_checkpoint(checkpoint)      
