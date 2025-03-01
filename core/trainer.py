@@ -112,10 +112,9 @@ class Trainer:
             with torch.set_grad_enabled(fw_model == 'train'):
                 if self.model_name == 'spoter':
                     #TODO: if spoter model ==> self.model(inputs).squeeze(1)  else: outputs = model(X_batch, edge_index, batch)
-                    outputs = self.model(inputs).squeeze(1) 
-                    print
+                    outputs = self.model(inputs).squeeze(1)
                     loss = self.criteria(outputs, labels)
-                    preds = outputs.argmax(dim=1)                
+                    preds = outputs.argmax(dim=1)
                 
                 elif self.model_name == 'gcn':
                     batch_size, num_frames, num_keypoints, keypoint_dim = inputs.shape

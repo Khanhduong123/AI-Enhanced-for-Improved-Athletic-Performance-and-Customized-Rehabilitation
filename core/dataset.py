@@ -66,9 +66,10 @@ class YogaDataset(Dataset):
         keypoints = aug.scaling()
         keypoints = aug.rotation()
         keypoints = aug.horizontal_flip()
-        keypoints = aug.temporal_warping()
         keypoints = aug.time_masking()
-        keypoints = aug.frame_interpolation()
+        """muốn xài thì bật cả 2 cùng lúc, nếu không thì lỗi dim --> [4, 199, 33, 3]"""
+        #keypoints = aug.temporal_warping()  
+        #keypoints = aug.frame_interpolation()
 
         return keypoints
 
@@ -87,7 +88,7 @@ if __name__ == "__main__":
     # pass
     # Khởi tạo dataset và dataloader với max_frames cố định
     print("With Augumentation")
-    json_folder = "data/keypoints/public_data/train"
+    json_folder = "../data/keypoints/public_data/train"
     dataset = YogaDataset(json_folder, max_frames=100,augment=True)  # Định nghĩa số frame cố định
 
     batch_size = 4
