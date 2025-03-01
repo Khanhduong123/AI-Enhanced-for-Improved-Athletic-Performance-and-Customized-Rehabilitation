@@ -2,7 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from core.utils import load_json, json_to_numpy
-
+from sklearn.metrics import ConfusionMatrixDisplay
 class Visualizer:
     def __init__(self, original_json_path, augmented_json_path):
         """Class Visualizer để hiển thị sự khác biệt giữa dữ liệu gốc và Augmented."""
@@ -38,6 +38,18 @@ class Visualizer:
         plt.legend()
         plt.gca().invert_yaxis()
         plt.show()
+
+def plot_confusion_matrix(cm, trainset,save_path):
+    cm_display = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=trainset.classes)
+    plt.figure(figsize=(12, 15))
+    cm_display.plot(cmap=plt.cm.Blues, values_format='d')
+    plt.xticks(rotation=45, ha='right')
+    plt.title("Confusion Matrix")
+    plt.tight_layout()
+    plt.savefig(save_path)
+    plt.close()
+    print(f"[+] Confusion matrix saved to {save_path}")
+    
 
 if __name__ == "__main__":
     original_json_path = ""

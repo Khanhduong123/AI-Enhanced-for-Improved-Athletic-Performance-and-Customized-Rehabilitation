@@ -3,7 +3,7 @@ import numpy as np
 import os
 import mediapipe as mp
 import json
-class Augumentation:
+class Augmentation:
     def __init__(self, skeleton):
         self.skeleton = skeleton
     
