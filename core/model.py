@@ -112,7 +112,7 @@ def modify_model_for_finetune(model, cf):
 
     # Nếu checkpoint không tồn tại, bỏ qua việc load
     if not os.path.exists(checkpoint_path):
-        print(f"❌ Không tìm thấy checkpoint tại {checkpoint_path}. Bỏ qua việc load pretrain.")
+        print(f"Không tìm thấy checkpoint tại {checkpoint_path}. Bỏ qua việc load pretrain.")
         return model
 
     print(f"Đang load pretrain từ {checkpoint_path}...")
