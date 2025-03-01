@@ -1,8 +1,8 @@
-import cv2
-import mediapipe as mp
-import numpy as np
-import json
 import os
+import cv2
+import json
+import numpy as np
+import mediapipe as mp
 
 def extract_skeleton_with_selected_frames(video_path, output_json, fps, action_name):
     if not os.path.exists(os.path.dirname(output_json)):
@@ -51,35 +51,16 @@ def extract_skeleton_with_selected_frames(video_path, output_json, fps, action_n
     with open(output_json, "w") as f:
         json.dump(skeleton_data, f, indent=4)
 
-def process_videos(video_root_folder, output_root_folder, fps=10, public_only=True):
+def process_videos(video_root_folder, output_root_folder, fps=10):
     if not os.path.exists(video_root_folder):
         print(f"Warning: Folder '{video_root_folder}' not found.")
         return
 
-    if public_only:
-        category = "public_data"
-        category_path = os.path.join(video_root_folder, category)
-        if not os.path.exists(category_path):
-            print(f"Warning: Folder '{category_path}' not found.")
-            return
-
-        subfolders = [os.path.join(category_path, cls) for cls in os.listdir(category_path) if os.path.isdir(os.path.join(category_path, cls))]
-    else:
-        category = "private_data"
-        category_path = os.path.join(video_root_folder, category)
-        if not os.path.exists(category_path):
-            print(f"Warning: Folder '{category_path}' not found.")
-            return
-
-        subfolders = []
-        for device in os.listdir(category_path):
-            device_path = os.path.join(category_path, device)
-            if os.path.isdir(device_path):
-                subfolders.extend([os.path.join(device_path, cls) for cls in os.listdir(device_path) if os.path.isdir(os.path.join(device_path, cls))])
-    
+    subfolders = [os.path.join(video_root_folder, cls) for cls in os.listdir(video_root_folder) if os.path.isdir(os.path.join(video_root_folder, cls))]
+    # print(subfolders)
     for class_path in subfolders:
         class_name = os.path.basename(class_path)
-        output_class_folder = os.path.join(output_root_folder, category, class_name if public_only else os.path.relpath(class_path, category_path))
+        output_class_folder = os.path.join(output_root_folder, class_name)
         os.makedirs(output_class_folder, exist_ok=True)
 
         video_files = [f for f in os.listdir(class_path) if f.endswith((".mp4", ".avi", ".mov"))]
@@ -92,9 +73,7 @@ def process_videos(video_root_folder, output_root_folder, fps=10, public_only=Tr
             extract_skeleton_with_selected_frames(video_path, output_json, fps, action_name)
 
 if __name__ == "__main__":
-    # Parameters   
-    FPS = 10
-    PUBLIC_ONLY = True # Đặt True nếu chỉ muốn xử lý public_data, False để xử lý private_data
-    video_root_folder = "../data/raw_video"  # Cấu trúc thư mục mới
-    output_root_folder = "../data/keypoints"
-    process_videos(video_root_folder, output_root_folder, FPS, PUBLIC_ONLY)
+    os.path.join(os.getcwd(), "data", "keypoint", "public_data", "train")
+    video_root_folder = os.path.join(os.getcwd(), "data", "processed_video", "public_data")
+    output_root_folder = os.path.join(os.getcwd(), "data", "keypoints", "public_data", "train")
+    process_videos(video_root_folder,output_root_folder)
