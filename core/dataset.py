@@ -73,6 +73,12 @@ class YogaDataset(Dataset):
 
         return keypoints
 
+    def normalize_skeleton(self,skeleton):
+        """Chuẩn hóa skeleton về trung tâm bằng cách trừ đi tọa độ trung bình."""
+        mean_pose = np.mean(skeleton[:, :, :2], axis=(0, 1))  # Trung bình trên trục x, y
+        skeleton[:, :, :2] -= mean_pose  # Dịch keypoints về trung tâm
+        return skeleton
+
 
     def __len__(self):
         return len(self.data)
@@ -82,6 +88,8 @@ class YogaDataset(Dataset):
         label = self.labels[idx]
         if self.augment:
             keypoints = self.apply_augmentation(keypoints)
+        
+        keypoints = self.normalize_skeleton(keypoints)  
         return torch.tensor(keypoints, dtype=torch.float32), torch.tensor(label, dtype=torch.long)
 
 if __name__ == "__main__":
