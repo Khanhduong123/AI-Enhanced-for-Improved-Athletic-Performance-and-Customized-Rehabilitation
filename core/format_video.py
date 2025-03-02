@@ -90,8 +90,52 @@ def rename_videos(root_folder, members_dict, device_dict, output_folder):
                 except Exception as e:
                     print(f"❌ Lỗi khi di chuyển & đổi tên {filename}: {e}")
 
+
 # -------------------------------
-# **Bước 3: Chạy tất cả trong main()**
+# **Bước 3: Chia video vào 4 thư mục tương ứng**
+# -------------------------------
+def organize_videos_by_action(root_folder):
+    """Duyệt tất cả video trong 'all_videos/' và chia vào 4 thư mục theo động tác"""
+    
+    # Định nghĩa các động tác
+    actions = ["Dangchanraxanghiengminh", "Ngoithangbangtrengot", "Sodatvuonlen", "Xemxaxemgan"]
+
+    # Đường dẫn thư mục chứa tất cả video
+    all_videos_folder = os.path.join(root_folder, "all_videos")
+
+    # Tạo 4 thư mục động tác nếu chưa có
+    for action in actions:
+        action_folder = os.path.join(root_folder, action)
+        if not os.path.exists(action_folder):
+            os.makedirs(action_folder)
+
+    # Duyệt tất cả video trong all_videos/
+    for filename in os.listdir(all_videos_folder):
+        file_path = os.path.join(all_videos_folder, filename)
+
+        # Bỏ qua nếu không phải file video
+        if not filename.endswith(".mp4"):
+            continue
+
+        # Xác định động tác từ tên file
+        for action in actions:
+            if action in filename:
+                destination_folder = os.path.join(root_folder, action)
+                destination_path = os.path.join(destination_folder, filename)
+
+                # Di chuyển file vào thư mục tương ứng
+                try:
+                    shutil.move(file_path, destination_path)
+                    print(f"✅ Đã di chuyển: {filename} ➝ {destination_folder}")
+                except Exception as e:
+                    print(f"❌ Lỗi khi di chuyển {filename}: {e}")
+                break  # Khi tìm thấy động tác, dừng vòng lặp để tránh xét thêm
+
+    print("🎉 Hoàn tất chia video vào 4 thư mục!")
+
+
+# -------------------------------
+# **Bước 4: Chạy tất cả trong main()**
 # -------------------------------
 def main():
     # Dictionary mapping ID với tên thí sinh (định dạng chuẩn)
@@ -122,6 +166,8 @@ def main():
 
     # Gọi hàm đổi tên file video
     rename_videos(root_folder, members_dict, device_dict, output_folder)
+#     organize_videos_by_action(root_folder)
+
 
     print("🎉 Hoàn tất quá trình xử lý video!")
 
