@@ -9,10 +9,10 @@ def convert_mov_to_mp4(file_path):
     new_path = os.path.splitext(file_path)[0] + ".mp4"
     try:
         os.rename(file_path, new_path)
-        print(f"✅ Đã đổi tên: {os.path.basename(file_path)} ➝ {os.path.basename(new_path)}")
+        print(f"Đã đổi tên: {os.path.basename(file_path)} ➝ {os.path.basename(new_path)}")
         return new_path  # Trả về đường dẫn mới sau khi đổi tên
     except Exception as e:
-        print(f"❌ Lỗi khi đổi tên {file_path}: {e}")
+        print(f"Lỗi khi đổi tên {file_path}: {e}")
         return file_path  # Trả lại file gốc nếu đổi tên thất bại
 
 # -----------------------------------------------
@@ -35,7 +35,7 @@ def rename_video(file_path, action, members_dict):
     # Kiểm tra nếu file đã có format đúng
     parts = filename_without_ext.split("_")
     if len(parts) == 3 and parts[2] == action:
-        print(f"✅ File '{filename}' đã đúng format, bỏ qua.")
+        print(f"File '{filename}' đã đúng format, bỏ qua.")
         return
 
     # Chuẩn hóa tên file để tìm ID phù hợp
@@ -49,7 +49,7 @@ def rename_video(file_path, action, members_dict):
             break
 
     if video_id is None:
-        print(f"⚠️ Bỏ qua file '{filename}' vì không tìm thấy ID phù hợp.")
+        print(f"Bỏ qua file '{filename}' vì không tìm thấy ID phù hợp.")
         return
 
     # Định dạng tên mới
@@ -59,9 +59,9 @@ def rename_video(file_path, action, members_dict):
     # Đổi tên file
     try:
         os.rename(file_path, new_path)
-        print(f"✅ Đã đổi tên: {filename} ➝ {new_filename}")
+        print(f"Đã đổi tên: {filename} ➝ {new_filename}")
     except Exception as e:
-        print(f"❌ Lỗi khi đổi tên {filename}: {e}")
+        print(f"Lỗi khi đổi tên {filename}: {e}")
 
 # -----------------------------------------------
 # **Bước 4: Chạy tất cả trong main()**
@@ -95,7 +95,7 @@ def main():
         action_path = os.path.join(root_folder, folder_name)
 
         if not os.path.exists(action_path):
-            print(f"❌ Lỗi: Thư mục '{action_path}' không tồn tại!")
+            print(f"Lỗi: Thư mục '{action_path}' không tồn tại!")
             continue
 
         for filename in os.listdir(action_path):
@@ -108,7 +108,7 @@ def main():
             # **Sau đó kiểm tra và đổi tên nếu chưa đúng format**
             rename_video(file_path, action, members_dict)
 
-    print("🎉 Hoàn tất quá trình xử lý video!")
+    print("Hoàn tất quá trình xử lý video!")
 
 if __name__ == "__main__":
     main()
