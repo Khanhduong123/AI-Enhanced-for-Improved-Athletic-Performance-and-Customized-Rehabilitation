@@ -69,18 +69,13 @@ def rename_video(file_path, action, members_dict):
 def main():
     # Dictionary mapping ID với tên thành viên (giữ nguyên format chuẩn)
     members_dict = {
-        "1": "LePhanTheVinh",
-        "2": "NguyenCatTuong",
-        "3": "VuDucThienDung",
-        "4": "NguyenNgocNhuThao",
-        "5": "HoangVanLong",
-        "6": "VoLeThanhTuyen",
-        "7": "LuongHoangTrucVan",
-        "8": "DoanVanNghia"
+        "9" : "Nguyễn Đào Kim Uyên",
+        "10" : "Trần Viết Đăng Khoa",
+        "11" : "Trần Công Quang Long"
     }
 
     # Thư mục gốc chứa các động tác
-    root_folder = r"D:\FPT\CN9\Thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\data\raw_video\test_name"  # 🛠 Thay đường dẫn phù hợp
+    root_folder = r"D:\FPT\CN9\Thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\data\raw_video"  # 🛠 Thay đường dẫn phù hợp
 
     # Mapping tên thư mục thành động tác
     action_mapping = {
