@@ -3,7 +3,6 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 import os
 import json
-from core.augment import Augmentation
 # Hàm đọc file JSON và chuyển thành numpy array
 def json_to_numpy(json_file, class_name):
     with open(json_file, "r") as f:
@@ -27,12 +26,11 @@ def json_to_numpy(json_file, class_name):
 
 # Dataset PyTorch
 class YogaDataset(Dataset):
-    def __init__(self, json_folder, max_frames=100,augment=False):
+    def __init__(self, json_folder, max_frames=100):
         self.data = []
         self.labels = []
         self.max_frames = max_frames
         self.label_map = {}  # Mapping từ tên class thành số
-        self.augment = augment
 
         # Lấy danh sách class từ thư mục
         class_folders = [folder for folder in os.listdir(json_folder) if os.path.isdir(os.path.join(json_folder, folder))]
@@ -58,20 +56,7 @@ class YogaDataset(Dataset):
                     
                     self.data.append(padded_keypoints)
                     self.labels.append(self.label_map[str(label)])  # Đảm bảo label là string trước khi tra cứu
-    
-    def apply_augmentation(self, keypoints):
-        aug = Augmentation(keypoints)
 
-        keypoints = aug.jittering()
-        keypoints = aug.scaling()
-        keypoints = aug.rotation()
-        keypoints = aug.horizontal_flip()
-        keypoints = aug.time_masking()
-        """muốn xài thì bật cả 2 cùng lúc, nếu không thì lỗi dim --> [4, 199, 33, 3]"""
-        #keypoints = aug.temporal_warping()  
-        #keypoints = aug.frame_interpolation()
-
-        return keypoints
 
     def normalize_skeleton(self,skeleton):
         """Chuẩn hóa skeleton về trung tâm bằng cách trừ đi tọa độ trung bình."""
@@ -86,19 +71,15 @@ class YogaDataset(Dataset):
     def __getitem__(self, idx):
         keypoints = self.data[idx]
         label = self.labels[idx]
-        if self.augment:
-            keypoints = self.apply_augmentation(keypoints)
         
         keypoints = self.normalize_skeleton(keypoints)  
         return torch.tensor(keypoints, dtype=torch.float32), torch.tensor(label, dtype=torch.long)
 
 if __name__ == "__main__":
     # pass
-    # Khởi tạo dataset và dataloader với max_frames cố định
     print("With Augumentation")
-    json_folder = "../data/keypoints/public_data/train"
-    dataset = YogaDataset(json_folder, max_frames=100,augment=True)  # Định nghĩa số frame cố định
-
+    json_folder =os.path.join(os.getcwd(), "data", "keypoints", "public_data","train")
+    dataset = YogaDataset(json_folder, max_frames=100)  # Định nghĩa số frame cố định
     batch_size = 4
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
 
