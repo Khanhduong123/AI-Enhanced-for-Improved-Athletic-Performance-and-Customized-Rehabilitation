@@ -23,13 +23,13 @@ def main():
 
     if bool(config.get('data.is_public')) == True:
     
-        trainset = YogaDataset(str(config.get('data.json_public_path_train')), max_frames=config.get('data.max_frame'),augment=bool(config.get("data.augmentation")))  # Định nghĩa số frame cố định
+        trainset = YogaDataset(str(config.get('data.json_public_path_train')), max_frames=config.get('data.max_frame'))  # Định nghĩa số frame cố định
         trainloader = DataLoader(trainset, batch_size=config.get('data.batch_size'), shuffle=True)
 
         valset = YogaDataset(str(config.get('data.json_public_path_val')), max_frames=config.get('data.max_frame'))  # Định nghĩa số frame cố định
         validloader = DataLoader(valset, batch_size=config.get('data.batch_size'), shuffle=False)
     else:
-        trainset = YogaDataset(str(config.get('data.json_private_path_train')), max_frames=config.get('data.max_frame'),augment=bool(config.get("data.augmentation")))  # Định nghĩa số frame cố định
+        trainset = YogaDataset(str(config.get('data.json_private_path_train')), max_frames=config.get('data.max_frame'))  # Định nghĩa số frame cố định
         trainloader = DataLoader(trainset, batch_size=config.get('data.batch_size'), shuffle=True)
 
         valset = YogaDataset(str(config.get('data.json_private_path_val')), max_frames=config.get('data.max_frame'))  # Định nghĩa số frame cố định
