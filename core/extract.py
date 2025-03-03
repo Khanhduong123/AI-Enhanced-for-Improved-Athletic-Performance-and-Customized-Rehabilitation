@@ -51,13 +51,13 @@ def extract_skeleton_with_selected_frames(video_path, output_json, fps, action_n
     with open(output_json, "w") as f:
         json.dump(skeleton_data, f, indent=4)
 
-def process_videos(video_root_folder, output_root_folder, fps=10):
+def process_videos(video_root_folder, output_root_folder, fps):
     if not os.path.exists(video_root_folder):
-        print(f"⚠️ Warning: Folder '{video_root_folder}' not found.")
+        print(f"Warning: Folder '{video_root_folder}' not found.")
         return
 
     subfolders = [os.path.join(video_root_folder, cls) for cls in os.listdir(video_root_folder) if os.path.isdir(os.path.join(video_root_folder, cls))]
-    # print(subfolders)
+    # example type of subfolders
     # subfolders = ['D:\\MinhHoang\\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\\data\\processed_video\\public_data\\train\\Lunge_Pose']
 
     for class_path in subfolders:
@@ -66,9 +66,8 @@ def process_videos(video_root_folder, output_root_folder, fps=10):
         os.makedirs(output_class_folder, exist_ok=True)
 
         video_files = [f for f in os.listdir(class_path) if f.endswith((".mp4", ".avi", ".mov"))]
-        # print(video_files)
-        
-        # video_files= ['sample6.mp4', 'sample7.mp4']
+        #Examle of name types
+        #video_files= ['sample6.mp4', 'sample7.mp4']
         for video_file in video_files:
             try:
                 video_path = os.path.join(class_path, video_file)
@@ -77,16 +76,18 @@ def process_videos(video_root_folder, output_root_folder, fps=10):
 
                 # Nếu file JSON đã tồn tại, bỏ qua
                 if os.path.exists(output_json):
-                    print(f"✅ Skipping {video_file} (Already processed)")
+                    print(f"Skipping {video_file} (Already processed)")
                     continue
 
-                print(f"📌 Processing {video_file} in class {class_name}...")
+                print(f"Processing {video_file} in class {class_name}...")
                 extract_skeleton_with_selected_frames(video_path, output_json, fps, action_name)
             except Exception as e:
-                print(f"❌ Error processing file {video_file}: {e}")
+                print(f"Error processing file {video_file}: {e}")
             
 
 if __name__ == "__main__":
-    video_root_folder = os.path.join(os.getcwd(), "data", "processed_video", "public_data", "train")
+    FPS =10
+    # os.path.join(os.getcwd(), "data", "keypoint", "public_data", "train")
+    video_root_folder = os.path.join(os.getcwd(), "data", "processed_video", "public_data")
     output_root_folder = os.path.join(os.getcwd(), "data", "keypoints", "public_data", "train")
-    process_videos(video_root_folder, output_root_folder)
+    process_videos(video_root_folder,output_root_folder,FPS)
