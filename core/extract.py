@@ -51,7 +51,7 @@ def extract_skeleton_with_selected_frames(video_path, output_json, fps, action_n
     with open(output_json, "w") as f:
         json.dump(skeleton_data, f, indent=4)
 
-def process_videos(video_root_folder, output_root_folder, fps=10):
+def process_videos(video_root_folder, output_root_folder, fps):
     if not os.path.exists(video_root_folder):
         print(f"Warning: Folder '{video_root_folder}' not found.")
         return
@@ -73,7 +73,8 @@ def process_videos(video_root_folder, output_root_folder, fps=10):
             extract_skeleton_with_selected_frames(video_path, output_json, fps, action_name)
 
 if __name__ == "__main__":
+    FPS =10
     # os.path.join(os.getcwd(), "data", "keypoint", "public_data", "train")
     video_root_folder = os.path.join(os.getcwd(), "data", "processed_video", "public_data")
     output_root_folder = os.path.join(os.getcwd(), "data", "keypoints", "public_data", "train")
-    process_videos(video_root_folder,output_root_folder)
+    process_videos(video_root_folder,output_root_folder,FPS)
