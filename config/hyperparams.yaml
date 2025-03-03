@@ -3,7 +3,6 @@ data:
   json_public_path_val: "data/keypoints/public_data/val"
   json_private_path_train: "data/keypoints/private_data/train"
   json_private_path_val: "data/keypoints/private_data/val"
-  augmentation: false
   is_public: true # Public is true hoặc Private is false
   max_frame: 100    # Số frame tối đa
   batch_size: 4     # Kích thước batch
