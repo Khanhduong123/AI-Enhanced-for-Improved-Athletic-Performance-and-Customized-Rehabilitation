@@ -8,9 +8,8 @@ core/__pycache__/*
 mlruns/*
 Thesis_25_artifact/*
 summary/*
-# checkpoints/*
+checkpoints/*
 summary/*
 data_augment/*
 __pycache__/*
-
 capstone_venv/
