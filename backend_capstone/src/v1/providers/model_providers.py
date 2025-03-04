@@ -29,9 +29,9 @@ class ModelProvider:
                 checkpoint_path = Config.CHECKPOINT_PATH_GCN
 
             # If you also have "spoter", you could do:
-            # elif cls._model_name == "spoter":
-            #     model = SPOTER(...)
-            #     checkpoint_path = Config.CHECKPOINT_PATH_SPOTER
+            elif cls._model_name == "spoter":
+                model = SPOTER(hidden_dim=72, num_classes=4,max_frame=100 ,num_heads=9, encoder_layers=6, decoder_layers=6)
+                checkpoint_path = Config.CHECKPOINT_PATH_SPOTER
 
             else:
                 raise ValueError(f"Unknown model name: {cls._model_name}")
