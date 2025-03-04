@@ -7,5 +7,4 @@ from .v1.configs.swagger import swagger_config
 # to create FastAPI app instance.
 def create_app():
     app = FastAPI(**swagger_config)
-    
     return app
