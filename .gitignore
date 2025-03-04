@@ -1,14 +1,11 @@
-data/*
-core/output_json/*
-notebook/.ipynb_checkpoints/*
-data/dummysquat/*
-core/__pycache__/*
-core/dataloader_fps.py
-core/__pycache__/*
-mlruns/*
-Thesis_25_artifact/*
-summary/*
-# checkpoints/*
-summary/*
-data_augment/*
-__pycache__/*
+ai_model_capstone/data/*
+ai_model_capstone/notebook/.ipynb_checkpoints/*
+ai_model_capstone/core/__pycache__/*
+ai_model_capstone/mlruns/*
+ai_model_capstone/Thesis_25_artifact/*
+ai_model_capstone/summary/*
+ai_model_capstone/checkpoints/*
+ai_model_capstone/data_augment/*
+ai_model_capstone/__pycache__/*
+ai_model_capstone/images/*
+capstone_venv/
