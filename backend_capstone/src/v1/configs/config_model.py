@@ -21,7 +21,7 @@ class Config:
         "best_checkpoint.pt"
     )
 
-    MODEL_NAME = "spoter" # or "gcn"
+    MODEL_NAME = "gcn" # or "gcn"
 
     # For example, if you have 4 classes:
-    CLASS_LABELS = ["Garland_Pose", "Happy_Baby_Pose", "Head_To_Knee_Pose", "Lunge_Pose"]
+    CLASS_LABELS = ["Garland_Pose", "Happy_Baby_Pose", "Head_To_Knee_Pose", "Lunge_Pose", "Mountain_Pose","Plank_Pose","Raised_Arms_Pose","Seated_Forward_Bend","Staff_Pose","Standing_Forward_Bend"]
