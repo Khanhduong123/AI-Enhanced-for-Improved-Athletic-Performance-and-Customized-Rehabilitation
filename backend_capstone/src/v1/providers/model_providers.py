@@ -30,7 +30,7 @@ class ModelProvider:
 
             # If you also have "spoter", you could do:
             elif cls._model_name == "spoter":
-                model = SPOTER(hidden_dim=72, num_classes=4,max_frame=100 ,num_heads=9, encoder_layers=6, decoder_layers=6)
+                model = SPOTER(hidden_dim=72, num_classes=10,max_frame=100 ,num_heads=9, encoder_layers=1, decoder_layers=1)
                 checkpoint_path = Config.CHECKPOINT_PATH_SPOTER
 
             else:
