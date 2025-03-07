@@ -1,4 +1,5 @@
-├───ai_model_capstone
+```bash
+───ai_model_capstone
 │   ├───checkpoints
 │   │   ├───gcn
 │   │   │   ├───finetune
@@ -86,3 +87,4 @@
 │   │       └───services
 │   └───temp_videos
 └───frontend_capstone
+```
