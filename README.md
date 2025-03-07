@@ -1,5 +1,6 @@
 ```bash
-───ai_model_capstone
+
+├───ai_model_capstone
 │   ├───checkpoints
 │   │   ├───gcn
 │   │   │   ├───finetune
