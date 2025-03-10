@@ -1,0 +1,14 @@
+data/*
+core/output_json/*
+notebook/.ipynb_checkpoints/*
+data/dummysquat/*
+core/__pycache__/*
+core/dataloader_fps.py
+core/__pycache__/*
+mlruns/*
+Thesis_25_artifact/*
+summary/*
+checkpoints/*
+data_augment/*
+__pycache__/*
+capstone_venv/
