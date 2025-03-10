@@ -90,7 +90,7 @@ class YogaGCN(nn.Module):
         self.conv1 = gnn.GCNConv(in_channels, hidden_dim)
         self.conv2 = gnn.GCNConv(hidden_dim, hidden_dim)
         self.conv3 = gnn.GCNConv(hidden_dim, hidden_dim)
-        self.conv4 = gnn.GCNConv(hidden_dim, hidden_dim)  # Thêm một lớp nữa
+        self.conv4 = gnn.GCNConv(hidden_dim, hidden_dim)
         self.fc = nn.Linear(hidden_dim, num_classes)
 
     def forward(self, x, edge_index, batch):
@@ -152,7 +152,7 @@ def modify_model_for_finetune(model, cf):
         model.load_state_dict(state_dict, strict=False)
 
         # Thay đổi classification layer
-        model.fc = nn.Linear(model.fc.in_features, new_num_classes)
+        model.fc = nn.Linear(hidden_dim, new_num_classes)
         nn.init.xavier_uniform_(model.fc.weight)
         model.fc.bias.data.zero_()
 
