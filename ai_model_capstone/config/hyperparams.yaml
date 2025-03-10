@@ -1,0 +1,47 @@
+data:
+  json_public_path_train: "data/keypoints/public_data/train"
+  json_public_path_val: "data/keypoints/public_data/val"
+  json_private_path_train: "data/keypoints/private_data/train"
+  json_private_path_val: "data/keypoints/private_data/val"
+  is_public: true # Public is true hoặc Private is false
+  max_frame: 100    # Số frame tối đa
+  batch_size: 32     # Kích thước batch
+
+mlflow:
+  name_id: "Thesis25"
+  artifact_location: "Thesis_25_artifact"
+  run_name: "SPOTER_test_1enc_1dec_72hu_150eps_0_0001lr" # or GCN_test
+
+model:
+  model_name: "spoter"  # "spoter" hoặc "gcn"
+  pretrained: true   # Pretrained is true hay is false
+
+  pretrain_config:
+    spoter:
+      num_classes: 10
+      hidden_dim: 72
+      num_heads: 9
+      encoder_layers: 1
+      decoder_layers: 1 
+
+    gcn:
+      in_channels: 3
+      hidden_dim: 128
+      num_classes: 10
+      
+  finetune_config:
+    spoter:
+      num_classes: 2
+      hidden_dim: 72
+      num_heads: 9
+      encoder_layers: 6
+      decoder_layers: 6    
+
+    gcn:
+      in_channels: 3
+      hidden_dim: 128
+      num_classes: 4
+
+train:
+  num_epochs: 120
+  lr: 0.0001
