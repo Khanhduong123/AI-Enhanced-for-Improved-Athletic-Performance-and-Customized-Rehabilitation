@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .v1.routers.prediction_upload_video import router as PredictionUploadVideoRouter
+from .v1.routers.predict import router as PredictionUploadVideoRouter
 
 # Create the APIRouter
 api_v1_router = APIRouter(prefix="/v1")
