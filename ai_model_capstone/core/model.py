@@ -87,10 +87,10 @@ class SPOTER(nn.Module):
 class YogaGCN(nn.Module):
     def __init__(self, in_channels=3, hidden_dim=128, num_classes=4):
         super(YogaGCN, self).__init__()
-        self.conv1 = gnn.GCNConv(in_channels, hidden_dim)
-        self.conv2 = gnn.GCNConv(hidden_dim, hidden_dim)
-        self.conv3 = gnn.GCNConv(hidden_dim, hidden_dim)
-        self.conv4 = gnn.GCNConv(hidden_dim, hidden_dim)
+        self.conv1 = gnn.GCNConv(in_channels, hidden_dim) # self.conv1 = gnn.GCNConv(in_channels, 128)
+        self.conv2 = gnn.GCNConv(hidden_dim, hidden_dim) # self.conv2 = gnn.GCNConv(128, 128)
+        self.conv3 = gnn.GCNConv(hidden_dim, hidden_dim) # self.conv3 = gnn.GCNConv(128, 128)
+        self.conv4 = gnn.GCNConv(hidden_dim, hidden_dim) # self.conv4 = gnn.GCNConv(128, hidden_dim)
         self.fc = nn.Linear(hidden_dim, num_classes)
 
     def forward(self, x, edge_index, batch):
