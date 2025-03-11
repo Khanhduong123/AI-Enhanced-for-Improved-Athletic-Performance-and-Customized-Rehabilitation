@@ -53,17 +53,23 @@ class VideoAugmentation:
         self.frames = np.delete(self.frames, drop_indices, axis=0)
         return self
 
-    def save_video(self, output_path, fps = 30): # tự nó lấy ra fps luôn chứ kh có ép cứng
+    def save_video(self, output_path, fps=30):
+        if os.path.exists(output_path):
+            print(f"Video {output_path} đã tồn tại, bỏ qua...")
+            return
+
         fourcc = cv2.VideoWriter_fourcc(*'mp4v')
         h, w = self.frames[0].shape[:2]
-        out = cv2.VideoWriter(output_path, fourcc,fps ,(w, h))
+        out = cv2.VideoWriter(output_path, fourcc, fps, (w, h))
 
         for frame in self.frames:
             out.write(frame)
         out.release()
         print(f"Augmented video saved to {output_path}")
 
+
 def process_videos(input_folder, output_folder):
+    error_log = []
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
 
@@ -84,18 +90,43 @@ def process_videos(input_folder, output_folder):
             video_path = os.path.join(class_path, video_file)
             base_name = os.path.splitext(video_file)[0]  # Lấy tên file không có đuôi .mp4
 
-            # Tạo instance của VideoAugmentation
-            augmenter = VideoAugmentation(video_path)
+            output_files = {
+                "rotation": os.path.join(output_class_path, f"{base_name}_rotation.mp4"),
+                "flip": os.path.join(output_class_path, f"{base_name}_flip.mp4"),
+                "speedup": os.path.join(output_class_path, f"{base_name}_speedup.mp4"),
+                "dropout": os.path.join(output_class_path, f"{base_name}_dropout.mp4"),
+            }
 
-            # Lưu các video augment vào thư mục tương ứng
-            augmenter.rotation(angle=10).save_video(os.path.join(output_class_path, f"{base_name}_rotation.mp4"))
-            augmenter.horizontal_flip().save_video(os.path.join(output_class_path, f"{base_name}_flip.mp4"))
-            augmenter.change_speed(speed_factor=1.2).save_video(os.path.join(output_class_path, f"{base_name}_speedup.mp4"))
-            augmenter.frame_dropout(drop_ratio=0.2).save_video(os.path.join(output_class_path, f"{base_name}_dropout.mp4"))
+            if all(os.path.exists(path) for path in output_files.values()):
+                print(f"Tất cả video augment của {video_file} đã tồn tại, bỏ qua...")
+                continue
+
+            try:
+                augmenter = VideoAugmentation(video_path)
+                
+                if not os.path.exists(output_files["rotation"]):
+                    augmenter.rotation(angle=10).save_video(output_files["rotation"])
+                if not os.path.exists(output_files["flip"]):
+                    augmenter.horizontal_flip().save_video(output_files["flip"])
+                if not os.path.exists(output_files["speedup"]):
+                    augmenter.change_speed(speed_factor=1.2).save_video(output_files["speedup"])
+                if not os.path.exists(output_files["dropout"]):
+                    augmenter.frame_dropout(drop_ratio=0.2).save_video(output_files["dropout"])
+
+            except (ValueError, MemoryError, np.core._exceptions._ArrayMemoryError) as e:
+                print(f"Lỗi với file {video_file}: {str(e)}")
+                error_log.append(video_path)
+                continue
+    
+    # Ghi danh sách các file lỗi vào error_log.txt
+    if error_log:
+        with open("error_log.txt", "w") as f:
+            for error_file in error_log:
+                f.write(error_file + "\n")
+        print("Danh sách file lỗi đã được lưu vào error_log.txt")
 
 if __name__ == "__main__":
-    input_path = os.path.join(os.getcwd(), "data", "raw_video", "public_data")
-
-    output_path = os.path.join(os.getcwd(), "data", "processed_video", "public_data")
+    input_path = os.path.join(os.getcwd(), "data", "raw_video", "private_data", "train")
+    output_path = os.path.join(os.getcwd(), "data", "processed_video", "private_data", "train")
 
     process_videos(input_path, output_path)

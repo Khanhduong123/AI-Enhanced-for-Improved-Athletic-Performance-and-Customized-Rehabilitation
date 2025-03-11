@@ -88,6 +88,6 @@ def process_videos(video_root_folder, output_root_folder, fps):
 if __name__ == "__main__":
     FPS =10
     # os.path.join(os.getcwd(), "data", "keypoint", "public_data", "train")
-    video_root_folder = os.path.join(os.getcwd(), "data", "processed_video", "public_data")
-    output_root_folder = os.path.join(os.getcwd(), "data", "keypoints", "public_data", "train")
+    video_root_folder = os.path.join(os.getcwd(), "data", "processed_video", "private_data", "train")
+    output_root_folder = os.path.join(os.getcwd(), "data", "keypoints", "private_data", "train")
     process_videos(video_root_folder,output_root_folder,FPS)
