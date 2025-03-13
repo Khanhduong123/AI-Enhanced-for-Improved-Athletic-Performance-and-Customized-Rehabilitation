@@ -9,7 +9,7 @@ data:
 
 mlflow:
   name_id: "Thesis25"
-  artifact_location: "Thesis_25_artifact"
+  artifact_location: "../../ai_model_capstone/Thesis_25_artifact"
   run_name: "finetune_test_gcn" # or GCN_test
 
 model:
