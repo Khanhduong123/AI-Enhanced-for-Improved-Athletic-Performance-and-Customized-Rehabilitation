@@ -132,12 +132,12 @@ def get_edge_index():
 
 if __name__ == "__main__":
     model_name = 'gcn'
-    num_classes = 4
+    num_classes = 10
     checkpoint_path = os.path.abspath("checkpoints/gcn/pretrain/best_checkpoint.pt")
     model = load_model(checkpoint_path, model_name, num_classes)
 
-    classes = ["Garland_Pose", "Happy_Baby_Pose", "Head_To_Knee_Pose", "Lunge_Pose"]
-    video_path = os.path.abspath("data/raw_video/public_data/Garland_Pose/sample1.mp4")
+    classes = ["Garland_Pose", "Happy_Baby_Pose", "Head_To_Knee_Pose", "Lunge_Pose", "Mountain_Pose", "Plank_Pose", "Raised_Arm_Pose", "Seated_Forward_Bend", "Staff_Pose", "Standing_Forward_Bend"]
+    video_path = os.path.abspath("data/raw_video/public_data/sample2.mp4")
 
     predict_action = predict_action(video_path, model, model_name, classes)
     print(f"Predicted results: {predict_action}")
