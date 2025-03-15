@@ -124,16 +124,16 @@ def get_edge_index():
 
 def main():
     """Chạy test trên dataset và lưu kết quả."""
-    data_dir = os.path.join("ai_model_capstone", "data", "raw_video", "public_data", "Oppo")
-    output_csv = os.path.join("ai_model_capstone","test","result", "result.csv")
+    data_dir = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\test\video\preprocess\Oppo"
+    output_csv = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\test\result\result_spoter_raw_90.csv"
 
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)  # Tạo thư mục nếu chưa có
 
-    model_name = "gcn"
+    model_name = "spoter"
     if model_name == "spoter":
-        model_path = os.path.abspath("ai_model_capstone/checkpoints/spoter/pretrain/best_checkpoint.pt")
+        model_path = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\checkpoints\spoter\pretrain\best_checkpoint.pt"
     else:
-        model_path = os.path.abspath("ai_model_capstone/checkpoints/gcn/pretrain/best_checkpoint.pt")
+        model_path = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\checkpoints\gcn\pretrain\best_checkpoint.pt"
 
     CLASS_LABELS = [
         "Garland_Pose", "Happy_Baby_Pose", "Head_To_Knee_Pose", "Lunge_Pose",
