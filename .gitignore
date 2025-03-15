@@ -8,4 +8,6 @@ ai_model_capstone/checkpoints/*
 ai_model_capstone/data_augment/*
 ai_model_capstone/__pycache__/*
 ai_model_capstone/images/*
+ai_model_capstone/test/video/*
+backend_capstone/temp_videos/*
 capstone_venv/
