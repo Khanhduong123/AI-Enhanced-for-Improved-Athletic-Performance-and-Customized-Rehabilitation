@@ -3,7 +3,7 @@ import numpy as np
 import random
 import os
 
-class VideoAugmentation:
+class PublicVideoAugmentation:
     def __init__(self, video_path):
         self.video_path = video_path
         self.frames = self._load_video()
@@ -67,8 +67,79 @@ class VideoAugmentation:
         out.release()
         print(f"Augmented video saved to {output_path}")
 
+class PrivateVideoAugmentation:
+    def __init__(self, video_path):
+        self.video_path = video_path
+        self.original_frames = self._load_video()  # Lưu frames gốc
+        self.frames = self.original_frames.copy()  # Bản sao để augment
 
-def process_videos(input_folder, output_folder):
+    def _load_video(self):
+        """ Load video và trích xuất các frame """
+        cap = cv2.VideoCapture(self.video_path)
+        if not cap.isOpened():
+            raise ValueError(f"Không thể mở video: {self.video_path}")
+
+        frames = []
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break
+            frames.append(frame)
+
+        cap.release()
+        if len(frames) == 0:
+            raise ValueError(f"Không có frame nào được trích xuất từ video: {self.video_path}")
+
+        return np.array(frames)
+
+    def reset_frames(self):
+        """ Reset frames về trạng thái gốc trước khi augment """
+        self.frames = self.original_frames.copy()
+
+    def rotation(self, angle=15):
+        self.reset_frames()  # Reset về frames gốc
+        h, w = self.frames[0].shape[:2]
+        center = (w // 2, h // 2)
+        M = cv2.getRotationMatrix2D(center, angle, 1.0)
+        self.frames = np.array([cv2.warpAffine(frame, M, (w, h)) for frame in self.frames])
+        return self
+
+    def horizontal_flip(self):
+        self.reset_frames()  # Reset về frames gốc
+        self.frames = np.array([cv2.flip(frame, 1) for frame in self.frames])
+        return self
+
+    def change_speed(self, speed_factor=1.2):
+        self.reset_frames()  # Reset về frames gốc
+        num_frames = int(len(self.frames) * speed_factor)
+        indices = np.linspace(0, len(self.frames) - 1, num_frames, dtype=int)
+        self.frames = self.frames[indices]
+        return self
+
+    def frame_dropout(self, drop_ratio=0.2):
+        self.reset_frames()  # Reset về frames gốc
+        num_frames = len(self.frames)
+        num_drop = int(num_frames * drop_ratio)
+        drop_indices = random.sample(range(num_frames), num_drop)
+        self.frames = np.delete(self.frames, drop_indices, axis=0)
+        return self
+
+    def save_video(self, output_path, fps=30):
+        if os.path.exists(output_path):
+            print(f"Video {output_path} đã tồn tại, bỏ qua...")
+            return
+
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        h, w = self.frames[0].shape[:2]
+        out = cv2.VideoWriter(output_path, fourcc, fps, (w, h))
+
+        for frame in self.frames:
+            out.write(frame)
+        out.release()
+        print(f"Augmented video saved to {output_path}")
+
+
+def process_videos(input_folder, output_folder, is_private):
     error_log = []
     if not os.path.exists(output_folder):
         os.makedirs(output_folder)
@@ -102,8 +173,11 @@ def process_videos(input_folder, output_folder):
                 continue
 
             try:
-                augmenter = VideoAugmentation(video_path)
-                
+                if is_private: # Nếu là private data, sử dụng PrivateVideoAugmentation
+                    augmenter = PrivateVideoAugmentation(video_path) 
+                else: # Ngược lại, sử dụng PublicVideoAugmentation
+                    augmenter = PublicVideoAugmentation(video_path)
+                    
                 if not os.path.exists(output_files["rotation"]):
                     augmenter.rotation(angle=10).save_video(output_files["rotation"])
                 if not os.path.exists(output_files["flip"]):
@@ -112,6 +186,7 @@ def process_videos(input_folder, output_folder):
                     augmenter.change_speed(speed_factor=1.2).save_video(output_files["speedup"])
                 if not os.path.exists(output_files["dropout"]):
                     augmenter.frame_dropout(drop_ratio=0.2).save_video(output_files["dropout"])
+                
 
             except (ValueError, MemoryError, np.core._exceptions._ArrayMemoryError) as e:
                 print(f"Lỗi với file {video_file}: {str(e)}")
@@ -125,7 +200,7 @@ def process_videos(input_folder, output_folder):
                 f.write(error_file + "\n")
         print("Danh sách file lỗi đã được lưu vào error_log.txt")
 
-def process_error_video(input_folder, output_folder, error_file):
+def process_error_video(input_folder, output_folder, error_file, is_private):
     error_log = []
     
     # Tạo thư mục output nếu chưa tồn tại
@@ -167,7 +242,10 @@ def process_error_video(input_folder, output_folder, error_file):
                 continue
 
             try:
-                augmenter = VideoAugmentation(video_path)
+                if is_private: # Nếu là private data, sử dụng PrivateVideoAugmentation
+                    augmenter = PrivateVideoAugmentation(video_path)
+                else: # Ngược lại, sử dụng PublicVideoAugmentation
+                    augmenter = PublicVideoAugmentation(video_path)
                 
                 if not os.path.exists(output_files["rotation"]):
                     augmenter.rotation(angle=10).save_video(output_files["rotation"])
@@ -187,11 +265,15 @@ def process_error_video(input_folder, output_folder, error_file):
         with open(error_file, "w") as f:
             f.write("\n".join(error_log))
 
-if __name__ == "__main__":
+def main():
+    IS_PRIVATE = True
     input_path = os.path.join(os.getcwd(), "data", "raw_video", "private_data", "train")
     output_path = os.path.join(os.getcwd(), "data", "processed_video", "private_data", "train")
     error_file = os.path.join(os.getcwd(),"error" ,"error_log.txt")
-    if error_file:
-        process_error_video(input_path, output_path, error_file)
-    else:
-        process_videos(input_path, output_path)
+    if IS_PRIVATE:
+        process_videos(input_path, output_path, is_private=IS_PRIVATE)
+    # if error_file:
+    #     process_error_video(input_path, output_path, error_file, is_private=IS_PRIVATE)
+
+if __name__ == "__main__":
+    main()
