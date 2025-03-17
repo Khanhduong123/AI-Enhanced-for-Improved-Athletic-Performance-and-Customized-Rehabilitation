@@ -45,7 +45,7 @@ def main():
     model = get_model(config)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=config.get("train.lr"))
-    trainer = Trainer(model,optimizer,criterion,None,config.get('model.model_name'),bool(config.get('model.pretrained')))
+    trainer = Trainer(model,optimizer,criterion,str(config.get('model.checkpoint_name')),None,config.get('model.model_name'),bool(config.get('model.pretrained')))
 
 
     with mlflow.start_run(run_name=config.get("mlflow.run_name"), experiment_id=exp_id,log_system_metrics=True) as run:
