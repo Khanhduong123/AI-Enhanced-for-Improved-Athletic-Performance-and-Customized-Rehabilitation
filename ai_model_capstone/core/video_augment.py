@@ -325,7 +325,7 @@ def process_error_video(input_folder, output_folder, error_file, is_method2):
             output_files = {
                 "rotation": os.path.join(output_class_path, f"{base_name}_rotation.mp4"),
                 "flip": os.path.join(output_class_path, f"{base_name}_flip.mp4"),
-                "speedup": os.path.join(output_class_path, f"{base_name}_speedup.mp4"),
+                "speedup": os.path.join(output_class_path, f"{base_name}_speedup.mp4"),#slowdown
                 "dropout": os.path.join(output_class_path, f"{base_name}_dropout.mp4"),
             }
 
