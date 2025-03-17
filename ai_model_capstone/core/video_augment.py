@@ -82,11 +82,13 @@ class PublicVideoAugmentationMethod2:
             raise ValueError(f"Không thể mở video: {self.video_path}")
 
         frames = []
+        target_size = (1080, 1920)
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
-            frames.append(frame)
+            frame_resized = cv2.resize(frame, target_size, interpolation=cv2.INTER_AREA)
+            frames.append(frame_resized)
 
         cap.release()
 
@@ -374,13 +376,16 @@ def process_error_video(input_folder, output_folder, error_file, is_method2):
 def main():
     # Các biến cấu hình:
     IS_PRIVATE = False # True nếu là private data, False nếu là public data
-    ERROR_FILE = False
-    IS_METHOD2 = False # True nếu sử dụng phương pháp augmentation 2, False nếu sử dụng phương pháp augmentation 1
+    ERROR_FILE = True
+    IS_METHOD2 = True # True nếu sử dụng phương pháp augmentation 2, False nếu sử dụng phương pháp augmentation 1, dùng cho bộ public
 
     data_type = "private_data" if IS_PRIVATE else "public_data" #Public_data
-    input_path = os.path.join(os.getcwd(), "data", "raw_video", data_type, "train" if IS_PRIVATE else "train")
-    output_path = os.path.join(os.getcwd(), "data", "processed_video", data_type, "train" if IS_PRIVATE else "train")
-
+    # input_path = os.path.join(os.getcwd(), "data", "method_1", "raw_video", data_type, "val" if IS_PRIVATE else "val")
+    # output_path = os.path.join(os.getcwd(), "data", "method_1", "processed_video", data_type, "val" if IS_PRIVATE else "val")
+    
+    input_path = r"F:\data\Data_public\raw_video\train"
+    output_path = r"F:\data\Data_public\processed_video\train_method_1"
+    
     # Xử lý video chính
     process_videos(input_path, output_path, is_method2=IS_METHOD2)
 
