@@ -15,6 +15,7 @@ mlflow:
 model:
   model_name: "spoter"  # "spoter" hoặc "gcn"
   pretrained: true  # Pretrained is true hay is false
+  checkpoint_name: "pretrain_spoter_1enc_1dec_36hu_150eps_0_0001lr" # or GCN_test
 
   pretrain_config:
     spoter:
