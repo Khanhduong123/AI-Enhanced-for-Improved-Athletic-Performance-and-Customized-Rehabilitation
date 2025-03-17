@@ -8,7 +8,7 @@ import mlflow
 
 
 class Trainer:
-    def __init__(self, model, optimizer, criterion,scheduler= None,model_name="spoter",is_pretrain=True):
+    def __init__(self, model, optimizer, criterion,checkpoint_name,scheduler= None,model_name="spoter",is_pretrain=True):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = model.to(self.device)
         self.optimizer = optimizer
@@ -26,6 +26,7 @@ class Trainer:
             "valid_acc": [],
             "lr": []
         }
+        self.checkpoint_name = checkpoint_name  
 
     def get_edge_index(self):
         """
@@ -53,7 +54,7 @@ class Trainer:
             self.best_acc = acc
 
             os.makedirs(checkpoint_dir, exist_ok=True)
-            checkpoint_path = os.path.join(checkpoint_dir, "best_checkpoint.pt")
+            checkpoint_path = os.path.join(checkpoint_dir, f"{self.checkpoint_name}.pt")
             params = {
                 'model': self.model.state_dict(),
                 'optimizer': self.optimizer.state_dict(),
