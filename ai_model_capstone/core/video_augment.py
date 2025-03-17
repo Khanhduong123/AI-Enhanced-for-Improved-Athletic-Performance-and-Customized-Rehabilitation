@@ -99,10 +99,6 @@ class PublicVideoAugmentationMethod2:
         """ Reset frames về trạng thái gốc trước khi augment """
         self.frames = self.original_frames.copy()
 
-    def reset_frames(self):
-        """ Reset frames về trạng thái gốc trước khi augment """
-        self.frames = self.original_frames.copy()
-
     def rotation(self, angle=15):
         self.reset_frames()  # Reset về frames gốc
         h, w = self.frames[0].shape[:2]
