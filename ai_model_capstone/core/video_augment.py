@@ -72,7 +72,6 @@ class PublicVideoAugmentationMethod2:
         self.video_path = video_path
         self.original_frames = self._load_video()
         self.frames = self.original_frames.copy()
-        
 
     def _load_video(self):
         """ Load video và trích xuất các frame """
@@ -82,11 +81,13 @@ class PublicVideoAugmentationMethod2:
             raise ValueError(f"Không thể mở video: {self.video_path}")
 
         frames = []
-        target_size = (1080, 1920)
+        target_size = (1080, 1920)  # OpenCV nhận (width, height)
+        
         while cap.isOpened():
             ret, frame = cap.read()
             if not ret:
                 break
+            
             frame_resized = cv2.resize(frame, target_size, interpolation=cv2.INTER_AREA)
             frames.append(frame_resized)
 
@@ -94,39 +95,37 @@ class PublicVideoAugmentationMethod2:
 
         if len(frames) == 0:
             raise ValueError(f"Không có frame nào được trích xuất từ video: {self.video_path}")
-
-        return np.array(frames)
-
-    def reset_frames(self):
-        """ Reset frames về trạng thái gốc trước khi augment """
-        self.frames = self.original_frames.copy()
+        
+        frames_array = np.array(frames, dtype=np.uint8)
+        print(f"Kích thước frame sau khi resize: {frames_array.shape}")  # Debug
+        return frames_array
 
     def reset_frames(self):
         """ Reset frames về trạng thái gốc trước khi augment """
         self.frames = self.original_frames.copy()
 
     def rotation(self, angle=15):
-        self.reset_frames()  # Reset về frames gốc
+        self.reset_frames()
         h, w = self.frames[0].shape[:2]
         center = (w // 2, h // 2)
         M = cv2.getRotationMatrix2D(center, angle, 1.0)
-        self.frames = np.array([cv2.warpAffine(frame, M, (w, h)) for frame in self.frames])
+        self.frames = np.array([cv2.warpAffine(frame, M, (w, h)) for frame in self.frames], dtype=np.uint8)
         return self
 
     def horizontal_flip(self):
-        self.reset_frames()  # Reset về frames gốc
-        self.frames = np.array([cv2.flip(frame, 1) for frame in self.frames])
+        self.reset_frames()
+        self.frames = np.array([cv2.flip(frame, 1) for frame in self.frames], dtype=np.uint8)
         return self
 
     def change_speed(self, speed_factor=1.2):
-        self.reset_frames()  # Reset về frames gốc
+        self.reset_frames()
         num_frames = int(len(self.frames) * speed_factor)
         indices = np.linspace(0, len(self.frames) - 1, num_frames, dtype=int)
         self.frames = self.frames[indices]
         return self
 
     def frame_dropout(self, drop_ratio=0.2):
-        self.reset_frames()  # Reset về frames gốc
+        self.reset_frames()
         num_frames = len(self.frames)
         num_drop = int(num_frames * drop_ratio)
         drop_indices = random.sample(range(num_frames), num_drop)
@@ -259,9 +258,11 @@ def process_videos(input_folder, output_folder, is_method2):
                 # Chọn phương pháp augmentation phù hợp
                 augmenter_public = PublicVideoAugmentationMethod2(video_path) if is_method2 else PublicVideoAugmentationMethod1(video_path)
                 augmenter_private = PrivateVideoAugmentation(video_path)
+                # augmenter_private = PublicVideoAugmentationMethod1(video_path)
 
                 # Danh sách augmenter để lặp qua
                 augmenters = [augmenter_public, augmenter_private]
+                # augmenters = [augmenter_private]
 
                 # Danh sách augmentations cần thực hiện
                 augmentations = {
@@ -390,9 +391,9 @@ def main():
     process_videos(input_path, output_path, is_method2=IS_METHOD2)
 
     # Nếu cần xử lý lỗi, chạy process_error_video()
-    if ERROR_FILE:
-        error_file = os.path.join(os.getcwd(), "error", "error_log.txt")
-        process_error_video(input_path, output_path, error_file, is_private=IS_PRIVATE)
+    # if ERROR_FILE:
+    #     error_file = os.path.join(os.getcwd(), "error", "error_log.txt")
+    #     process_error_video(input_path, output_path, error_file, is_private=IS_PRIVATE)
 
 if __name__ == "__main__":
     main()
