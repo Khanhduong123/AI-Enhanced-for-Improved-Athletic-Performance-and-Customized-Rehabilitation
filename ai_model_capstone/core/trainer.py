@@ -84,10 +84,10 @@ class Trainer:
         f1 = metrics.f1_score(labels, preds, average='micro')
 
         return {
-            'accuracy' : round(accuracy, 7),
-            'precision' : round(precision, 7),
-            'recall' : round(recall, 7),
-            'f1' : round(f1, 7)
+            'accuracy' : round(accuracy, 10),
+            'precision' : round(precision, 10),
+            'recall' : round(recall, 10),
+            'f1' : round(f1, 10)
         }
     
     def forward(self, dataloader, fw_model='train'):
@@ -150,10 +150,10 @@ class Trainer:
         loss = sum(cache['loss']) / len(cache['loss'])
         acc = [[i["accuracy"] for i in cache["acc"]], [i["precision"] for i in cache["acc"]], [i["recall"] for i in cache["acc"]], [i["f1"] for i in cache["acc"]]]
         acc = {
-            "accuracy": round(sum(acc[0]) / len(acc[0]), 7),
-            "precision": round(sum(acc[1]) / len(acc[1]), 7),
-            "recall": round(sum(acc[2]) / len(acc[2]), 7),
-            "f1": round(sum(acc[3]) / len(acc[3]), 7)
+            "accuracy": round(sum(acc[0]) / len(acc[0]), 10),
+            "precision": round(sum(acc[1]) / len(acc[1]), 10),
+            "recall": round(sum(acc[2]) / len(acc[2]), 10),
+            "f1": round(sum(acc[3]) / len(acc[3]), 10)
         }
 
         self.cache[f"{fw_model}_loss"].append(loss)
