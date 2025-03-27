@@ -88,7 +88,7 @@ def main():
             trainer.fit(trainloader,validloader,config.get("train.num_epochs"),checkpoint_dir)
             cm = confusion_matrix(trainer.all_labels, trainer.all_preds)
             os.makedirs("image",exist_ok=True)
-            name_img = f"confusion_matrix_{config.get("image.name")}.png"
+            name_img = f"confusion_matrix_{config.get('image.name')}.png"
             plot_confusion_matrix(cm,trainset,os.path.abspath(f'image/{name_img}'))
             mlflow.pytorch.log_model(model, "models", signature=signature)
         except KeyboardInterrupt:
