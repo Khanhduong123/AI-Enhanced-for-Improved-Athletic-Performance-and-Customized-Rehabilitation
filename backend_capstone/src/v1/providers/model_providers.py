@@ -21,16 +21,12 @@ class ModelProvider:
         if cls._model_name not in cls._models:
             # If your model name is "gcn", build a GCN instance:
             if cls._model_name == "gcn":
-                model = YogaGCN(
-                    in_channels=3,
-                    hidden_dim=128,
-                    num_classes=len(cls._classes)
-                )
+                model = YogaGCN(in_channels=3, hidden_dim=256, num_classes=len(cls._classes))
                 checkpoint_path = Config.CHECKPOINT_PATH_GCN
 
             # If you also have "spoter", you could do:
             elif cls._model_name == "spoter":
-                model = SPOTER(hidden_dim=72, num_classes=10,max_frame=100 ,num_heads=9, encoder_layers=1, decoder_layers=1)
+                model = SPOTER(hidden_dim=18, num_classes=len(cls._classes), max_frame=100, num_heads=9, encoder_layers=1, decoder_layers=1)
                 checkpoint_path = Config.CHECKPOINT_PATH_SPOTER
 
             else:
