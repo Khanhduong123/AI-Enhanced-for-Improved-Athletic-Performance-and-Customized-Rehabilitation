@@ -124,22 +124,20 @@ def get_edge_index():
 
 def main():
     """Chạy test trên dataset và lưu kết quả."""
-    data_dir = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\test\video\preprocess\Oppo"
-    output_csv = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\test\result\result_spoter_raw_90.csv"
+    data_dir = r"E:\MinhHoang\thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\test\Oppo"
+    output_csv = r"E:\MinhHoang\thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\test\result_spoter_raw_90.csv" # nhớ tạo lại tên csv
 
     os.makedirs(os.path.dirname(output_csv), exist_ok=True)  # Tạo thư mục nếu chưa có
 
     model_name = "spoter"
     if model_name == "spoter":
-        model_path = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\checkpoints\spoter\pretrain\best_checkpoint.pt"
+        # model_path = r"E:\MinhHoang\thesis\checkpoint\method_1\finetune_spoter_method_1_1enc_1dec_18hu_50eps_0_00001lr.pt"
+        model_path = r"E:\MinhHoang\thesis\checkpoint\method_2\finetune_spoter_method_2_1enc_1dec_72hu_30eps_0_00001lr.pt"
     else:
-        model_path = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\checkpoints\gcn\pretrain\best_checkpoint.pt"
+        # model_path = r"E:\MinhHoang\thesis\checkpoint\method_1\finetune_gcn_method_1_4layers_256hu_50eps_0_001lr.pt"
+        model_path = r"E:\MinhHoang\thesis\checkpoint\method_2\finetune_gcn_method_2_4layers_128hu_50eps_0_001lr.pt"
 
-    CLASS_LABELS = [
-        "Garland_Pose", "Happy_Baby_Pose", "Head_To_Knee_Pose", "Lunge_Pose",
-        "Mountain_Pose", "Plank_Pose", "Raised_Arms_Pose", "Seated_Forward_Bend",
-        "Staff_Pose", "Standing_Forward_Bend"
-    ]
+    CLASS_LABELS = ["Dangchanraxanghiengminh", "Ngoithangbangtrengot", "Sodatvuonlen", "Xemxaxemgan"]
 
     model = load_model(model_path, model_name, num_classes=len(CLASS_LABELS))
     
