@@ -1,5 +1,0 @@
-Video Name,Predicted Class,Actual Class,Confidence Score,Correct
-sample1_180.mp4,Plank_Pose,Garland_Pose,0.9731695652008057,False
-sample1_90.mp4,Garland_Pose,Garland_Pose,0.9884850978851318,True
-sample2_180.mp4,Happy_Baby_Pose,Garland_Pose,0.7383782863616943,False
-sample2_90.mp4,Happy_Baby_Pose,Garland_Pose,0.9955602884292603,False

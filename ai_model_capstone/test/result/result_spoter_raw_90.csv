@@ -1,3 +1,0 @@
-Video Name,Predicted Class,Actual Class,Confidence Score,Correct
-sample1_blur.mp4,Garland_Pose,Garland_Pose,0.9981607794761658,True
-sample2_blur.mp4,Garland_Pose,Garland_Pose,0.9950502514839172,True
