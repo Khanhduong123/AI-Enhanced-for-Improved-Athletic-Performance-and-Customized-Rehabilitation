@@ -58,7 +58,7 @@ def process_videos(video_root_folder, output_root_folder, fps):
 
     subfolders = [os.path.join(video_root_folder, cls) for cls in os.listdir(video_root_folder) if os.path.isdir(os.path.join(video_root_folder, cls))]
     # example type of subfolders
-    # subfolders = ['D:\\MinhHoang\\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\\data\\processed_video\\public_data\\train\\Lunge_Pose']
+    # subfolders = ['D:\\User\\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\\data\\processed_video\\public_data\\train\\Lunge_Pose']
 
     for class_path in subfolders:
         class_name = os.path.basename(class_path)
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     # os.path.join(os.getcwd(), "data", "keypoint", "public_data", "train")
     # video_root_folder = os.path.join(os.getcwd(), "data", "processed_video", "private_data", "train")
     # output_root_folder = os.path.join(os.getcwd(), "data", "keypoints", "private_data", "train")
-    video_root_folder = r"D:\thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\data\extra"
-    output_root_folder = r"D:\thesis\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\data\method_1\keypoints\private_data\val"
+    video_root_folder = "/ai_model_capstone/data/extra"
+    output_root_folder = "/ai_model_capstone/data/method_1/keypoints/private_data/val"
     
     process_videos(video_root_folder,output_root_folder,FPS)
