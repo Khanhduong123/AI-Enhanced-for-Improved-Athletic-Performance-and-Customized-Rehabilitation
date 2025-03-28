@@ -132,7 +132,7 @@ def save_confusion_matrix(y_true, y_pred, labels, output_path):
     plt.close()
 
 def main():
-    data_dir = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\test\Oppo"
+    data_dir = "test/Oppo"
     os.makedirs("result/csv", exist_ok=True)
     os.makedirs("result/img", exist_ok=True)
     os.makedirs("error", exist_ok=True)
@@ -143,9 +143,9 @@ def main():
     model_name = "spoter" # "spoter" 
 
     if model_name == "spoter":
-        model_path = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\checkpoints\method_1\finetune_spoter_method_1_1enc_1dec_18hu_50eps_0_00001lr.pt"
+        model_path = "checkpoints/method_1/finetune_spoter_method_1_1enc_1dec_18hu_50eps_0_00001lr.pt"
     else:
-        model_path = r"D:\Thesis_SP25\work\AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation\ai_model_capstone\checkpoints\method_1\finetune_gcn_method_1_4layers_256hu_50eps_0_001lr.pt"
+        model_path = "checkpoints/method_1/finetune_gcn_method_1_4layers_256hu_50eps_0_001lr.pt"
 
     model = load_model(model_path, model_name, num_classes=len(CLASS_LABELS))
 
