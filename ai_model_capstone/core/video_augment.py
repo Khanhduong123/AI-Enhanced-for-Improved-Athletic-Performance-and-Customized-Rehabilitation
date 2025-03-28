@@ -380,8 +380,8 @@ def main():
     # input_path = os.path.join(os.getcwd(), "data", "method_1", "raw_video", data_type, "val" if IS_PRIVATE else "val")
     # output_path = os.path.join(os.getcwd(), "data", "method_1", "processed_video", data_type, "val" if IS_PRIVATE else "val")
     
-    input_path = r"F:\data\Data_public\raw_video\train"
-    output_path = r"F:\data\Data_public\processed_video\train_method_1"
+    input_path = "/raw_video/train"
+    output_path = "/processed_video/train_method_1"
     
     # Xử lý video chính
     process_videos(input_path, output_path, is_method2=IS_METHOD2)
