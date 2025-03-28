@@ -1,0 +1,49 @@
+data:
+  json_public_path_train: "data/method_1/keypoints/public_data/train"
+  json_public_path_val: "data/method_1/keypoints/public_data/val"
+  json_private_path_train: "data/method_1/keypoints/private_data/train"
+  json_private_path_val: "data/method_1/keypoints/private_data/val"
+  is_public: false # Public is true hoặc Private is false
+  max_frame: 100    # Số frame tối đa
+  batch_size: 32     # Kích thước batch
+
+mlflow:
+  name_id: "Thesis25"
+  artifact_location: "../../ai_model_capstone/Thesis_25_artifact_method_1"
+  run_name: "finetune_spoter_method_1_1enc_1dec_18hu_70eps_0_00001lr" # or GCN_test
+
+model:
+  model_name: "spoter"  # "spoter" hoặc "gcn"
+  pretrained: false  # Pretrained is true hay is false
+  checkpoint_name: "finetune_spoter_method_1_1enc_1dec_18hu_70eps_0_00001lr" # or GCN_test
+
+  pretrain_config:
+    spoter:
+      num_classes: 10
+      hidden_dim: 18
+      num_heads: 9
+      encoder_layers: 1
+      decoder_layers: 1
+
+    gcn:
+      in_channels: 3
+      hidden_dim: 256
+      num_classes: 10
+      
+  finetune_config:
+    spoter:
+      num_classes: 4
+      hidden_dim: 18
+      num_heads: 9
+      encoder_layers: 1
+      decoder_layers: 1    
+
+    gcn:
+      in_channels: 3
+      hidden_dim: 256
+      num_classes: 4
+image:
+  name: "confusion_matrix_finetune_spoter_method_1_1enc_1dec_18hu_70eps_0_00001lr.png"
+train:
+  num_epochs: 70
+  lr: 0.00001
