@@ -108,32 +108,57 @@ def predict_action(
     model: torch.nn.Module, 
     model_name: str, 
     classes: List[str]
-) -> str:
+) -> dict:
     """
     Given a video, extract skeleton keypoints, run through the specified model, 
     and return the predicted class label.
     """
-    skeleton = extract_skeleton_from_video(video_path)
-    if skeleton.size == 0:
-        raise ValueError(f"Empty skeleton from video {video_path}!")
+    try:
+        skeleton = extract_skeleton_from_video(video_path)
+        if skeleton.size == 0:
+            raise ValueError(f"Empty skeleton from video {video_path}!")
 
-    skeleton = normalize_skeleton(skeleton)
-    skeleton_tensor = torch.tensor(skeleton, dtype=torch.float32)
+        skeleton = normalize_skeleton(skeleton)
+        skeleton_tensor = torch.tensor(skeleton, dtype=torch.float32)
 
-    with torch.no_grad():
-        if model_name == 'spoter':
-            # Flatten shape (num_frames, 33, 3) → (1, 9900)
-            skeleton_tensor = skeleton_tensor.unsqueeze(0)  # (1, num_frames, 33, 3)
-            skeleton_tensor = skeleton_tensor.view(1, -1)   # (1, 9900)
-            outputs = model(skeleton_tensor).squeeze(1)
-            preds = outputs.argmax(dim=1)
-        else:
-            # For GCN model
-            num_frames, num_keypoints, keypoint_dim = skeleton.shape
-            skeleton_tensor = skeleton_tensor.view(num_frames * num_keypoints, keypoint_dim)
-            batch = torch.zeros(num_frames * num_keypoints, dtype=torch.long)
-            edge_index = get_edge_index()
-            outputs = model(skeleton_tensor, edge_index, batch)
-            preds = outputs.argmax(dim=1)
+        with torch.no_grad():
+            if model_name == 'spoter':
+                # Flatten shape (num_frames, 33, 3) → (1, 9900)
+                skeleton_tensor = skeleton_tensor.unsqueeze(0)  # (1, num_frames, 33, 3)
+                skeleton_tensor = skeleton_tensor.view(1, -1)   # (1, 9900)
+                outputs = model(skeleton_tensor).squeeze(1)
+                preds = outputs.argmax(dim=1)
+            else:
+                # For GCN model
+                num_frames, num_keypoints, keypoint_dim = skeleton.shape
+                skeleton_tensor = skeleton_tensor.view(num_frames * num_keypoints, keypoint_dim)
+                batch = torch.zeros(num_frames * num_keypoints, dtype=torch.long)
+                edge_index = get_edge_index()
+                outputs = model(skeleton_tensor, edge_index, batch)
+                preds = outputs.argmax(dim=1)
 
-    return classes[preds]
+        # Lấy giá trị confidence
+        raw_confidence = float(outputs.max().item())
+        
+        # Chuẩn hóa giá trị confidence về 0-1
+        # Phương pháp 1: Giới hạn trực tiếp
+        normalized_confidence = min(raw_confidence, 1.0)
+        
+        # Phương pháp 2: Áp dụng softmax (nếu mô hình chưa áp dụng)
+        # outputs_softmax = torch.nn.functional.softmax(outputs, dim=1)
+        # normalized_confidence = float(outputs_softmax.max().item())
+        
+        result = {
+            "class": classes[preds],
+            "confidence": normalized_confidence, # Sử dụng giá trị đã chuẩn hóa
+            "features": []
+        }
+        return result
+    except Exception as e:
+        print(f"Error in predict_action: {str(e)}")
+        return {
+            "class": "Unknown",
+            "confidence": 0.0,
+            "features": [],
+            "error": str(e)
+        }

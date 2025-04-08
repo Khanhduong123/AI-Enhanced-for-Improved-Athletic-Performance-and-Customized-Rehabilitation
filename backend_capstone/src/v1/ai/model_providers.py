@@ -2,8 +2,8 @@ import torch
 from typing import Dict
 # Adjust import as needed based on your folder structure:
 from ..configs.config_model import Config
-from ..services.model_service import load_model
-from ..models.core_model import SPOTER, YogaGCN 
+from .model_service import load_model
+from ..ai.core_model import SPOTER, YogaGCN 
 
 class ModelProvider:
     """
