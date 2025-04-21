@@ -34,29 +34,48 @@ async def create_exercise(exercise: ExerciseCreate) -> Exercise:
     collection = MongoDB.get_collection(COLLECTION_NAME)
     
     try:
-        assigner = await get_user_from_service(exercise.assigned_by)
-        print(f"DEBUG EXERCISE SERVICE: Assigner ID: {exercise.assigned_by}")
-        print(f"DEBUG EXERCISE SERVICE: Assigner Object from get_user: {assigner}") 
-        print(f"DEBUG EXERCISE SERVICE: Assigner Role: '{assigner.role}'") 
-        print(f"DEBUG EXERCISE SERVICE: Assigner Role Lower: '{assigner.role.lower()}'") 
+        # Debug the incoming IDs
+        print(f"DEBUG CREATE EXERCISE: Assigner ID type: {type(exercise.assigned_by)}, value: {exercise.assigned_by}")
+        print(f"DEBUG CREATE EXERCISE: Assignee ID type: {type(exercise.assigned_to)}, value: {exercise.assigned_to}")
+        
+        # Try to find the assigner (doctor)
+        try:
+            assigner = await get_user_from_service(exercise.assigned_by)
+            print(f"DEBUG CREATE EXERCISE: Found assigner: {assigner.id}, role: {assigner.role}")
+        except HTTPException as e:
+            print(f"ERROR CREATE EXERCISE: Assigner not found: {exercise.assigned_by}, Error: {str(e)}")
+            raise HTTPException(status_code=404, 
+                               detail=f"Doctor with ID {exercise.assigned_by} not found")
+        
+        # Validate assigner role
         if assigner.role.lower() not in ["doctor", "docter"]:
-            print("DEBUG EXERCISE SERVICE: Assigner Role Check FAILED")
-            raise HTTPException(status_code=400, detail="Assigner must be a Doctor")
-        assignee = await get_user_from_service(exercise.assigned_to)
-        print(f"DEBUG EXERCISE SERVICE: Assignee ID: {exercise.assigned_to}")
-        print(f"DEBUG EXERCISE SERVICE: Assignee Object from get_user: {assignee}")
-        print(f"DEBUG EXERCISE SERVICE: Assignee Role: '{assignee.role}'")
-        print(f"DEBUG EXERCISE SERVICE: Assignee Role Lower: '{assignee.role.lower()}'")
+            print(f"DEBUG CREATE EXERCISE: Invalid assigner role: {assigner.role}")
+            raise HTTPException(status_code=400, 
+                              detail=f"User with ID {exercise.assigned_by} is not a doctor (role: {assigner.role})")
+        
+        # Try to find the assignee (patient)
+        try:
+            assignee = await get_user_from_service(exercise.assigned_to)
+            print(f"DEBUG CREATE EXERCISE: Found assignee: {assignee.id}, role: {assignee.role}")
+        except HTTPException as e:
+            print(f"ERROR CREATE EXERCISE: Assignee not found: {exercise.assigned_to}, Error: {str(e)}")
+            raise HTTPException(status_code=404, 
+                              detail=f"Patient with ID {exercise.assigned_to} not found")
+            
+        # Validate assignee role
         if assignee.role.lower() not in ["patient", "patinet"]:
-            print("DEBUG EXERCISE SERVICE: Assignee Role Check FAILED") 
-            raise HTTPException(status_code=400, detail="Assignee must be a Patient")
+            print(f"DEBUG CREATE EXERCISE: Invalid assignee role: {assignee.role}")
+            raise HTTPException(status_code=400, 
+                              detail=f"User with ID {exercise.assigned_to} is not a patient (role: {assignee.role})")
+        
     except HTTPException as e:
-        if e.status_code == 404:
-            raise HTTPException(status_code=404, detail=f"Assigner or Assignee user not found: {e.detail}")
-        else:
-            raise HTTPException(status_code=400, detail=f"Invalid assigner ({exercise.assigned_by}) or assignee ({exercise.assigned_to}) ID or role: {e.detail}")
-    except AttributeError:
-        raise HTTPException(status_code=500, detail="Error accessing user role information")
+        # Pass through HTTP exceptions with their status code and detail
+        raise e
+    except Exception as e:
+        # For unexpected errors, log and raise with more detail
+        print(f"UNEXPECTED ERROR CREATE EXERCISE: {str(e)}")
+        raise HTTPException(status_code=500, 
+                           detail=f"Error processing exercise creation: {str(e)}")
 
     # Create exercise in database format
     exercise_in_db = ExerciseInDB(**exercise.dict())
@@ -163,8 +182,14 @@ async def get_patient_exercises(patient_id: str) -> List[Exercise]:
 
     print(f"DEBUG EXERCISE: Get patient exercises filter: {filter_query}")
     cursor = collection.find(filter_query).sort("assigned_date", DESCENDING)
-    
+    motion_map = {
+        "Sodatvuonlen": "Sờ Đất Vươn Lên",
+        "Xemxaxemgan": "Xem Xa Xem Gần",
+        "Ngoithangbangtrengot": "Ngồi Thang Bằng Trên Gót",
+        "Dangchanraxanghiengminh": "Đang Chân Ra Xa Nghiêng Mình"
+    }
     async for exercise in cursor:
+        exercise["name"] = motion_map[exercise["name"]]  # Thay đổi tên bài tập
         exercises.append(Exercise(**exercise))
     
     return exercises
@@ -220,4 +245,35 @@ async def update_exercise_status(exercise_id: str, status: str) -> Exercise:
             else: raise e
 
     # Get the updated exercise using the corrected get_exercise function
-    return await get_exercise(exercise_id) 
+    return await get_exercise(exercise_id)
+
+async def get_patients_assigned_by_doctor(doctor_id: str) -> List[User]:
+    """Get all patients that a doctor has assigned exercises to"""
+    collection = MongoDB.get_collection(COLLECTION_NAME)
+    patients = []
+    
+    # Build query filter for doctor_id
+    filter_query = {"assigned_by": doctor_id}
+    if ObjectId.is_valid(doctor_id):
+        filter_query = {"$or": [{"assigned_by": doctor_id}, {"assigned_by": ObjectId(doctor_id)}]}
+    
+    print(f"DEBUG EXERCISE: Get doctor patients filter: {filter_query}")
+    
+    # Find unique patient IDs from exercises
+    patient_ids = set()
+    cursor = collection.find(filter_query)
+    
+    async for exercise in cursor:
+        patient_ids.add(exercise["assigned_to"])
+    
+    # Get patient details for each patient ID
+    for patient_id in patient_ids:
+        try:
+            patient = await get_user_from_service(patient_id)
+            if patient.role.lower() in ["patient", "patinet"]:
+                patients.append(patient)
+        except HTTPException:
+            # Skip if patient no longer exists
+            continue
+    
+    return patients 

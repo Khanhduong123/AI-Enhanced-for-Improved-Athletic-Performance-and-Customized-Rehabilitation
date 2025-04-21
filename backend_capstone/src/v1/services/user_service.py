@@ -30,9 +30,17 @@ async def create_user(user: UserCreate) -> User:
             detail="Email already registered"
         )
     
+    # Create a mutable dictionary from the user data
+    user_data = user.dict()
+    
+    # Set default specialization for doctors
+    if user.role.lower() == "doctor" or user.role.lower() == "docter":
+        if not user_data.get("specialization"):
+            user_data["specialization"] = "Physical Therapist"
+    
     # Create user with hashed password
     user_in_db = UserInDB(
-        **user.dict(),
+        **user_data,
         hashed_password=await get_password_hash(user.password)
     )
     
@@ -170,4 +178,28 @@ async def ensure_indexes():
     This function should be called during application startup
     """
     collection = MongoDB.get_collection(COLLECTION_NAME)
-    await collection.create_indexes(INDEXES) 
+    await collection.create_indexes(INDEXES)
+
+async def get_all_patients() -> List[User]:
+    """Get all users with the role 'Patient'"""
+    collection = MongoDB.get_collection(COLLECTION_NAME)
+    patients = []
+    
+    # Use a simpler query that's less likely to filter incorrectly
+    # Look for role that contains "patient" in any case
+    cursor = collection.find({"role": {"$regex": "patient", "$options": "i"}})
+    
+    # Print the count for debugging
+    count = await collection.count_documents({"role": {"$regex": "patient", "$options": "i"}})
+    print(f"DEBUG: Found {count} patients in database")
+    
+    async for user_data in cursor:
+        print(f"DEBUG: Processing patient with ID: {user_data.get('_id')} and role: {user_data.get('role')}")
+        # Just use the user_data directly instead of calling get_user again
+        try:
+            patients.append(User(**user_data))
+        except Exception as e:
+            print(f"ERROR: Could not process patient {user_data.get('_id')}: {str(e)}")
+    
+    print(f"DEBUG: Returning {len(patients)} patients")
+    return patients 

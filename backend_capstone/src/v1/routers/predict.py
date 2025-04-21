@@ -110,6 +110,13 @@ async def predict_pose(
             video_id=str(video.id)
         )
 
+        motion_map = {
+            "Sodatvuonlen": "Sờ Đất Vươn Lên",
+            "Xemxaxemgan": "Xem Xa Xem Gần",
+            "Ngoithangbangtrengot": "Ngồi Thang Bằng Trên Gót",
+            "Dangchanraxanghiengminh": "Đang Chân Ra Xa Nghiêng Mình"
+        }
+   
         # Return combined result with more detailed information
         return {
             "status": "success",
@@ -120,7 +127,7 @@ async def predict_pose(
             },
             "prediction": {
                 "id": str(prediction_result.id),
-                "predicted_motion": prediction_result.predicted_motion,
+                "predicted_motion": motion_map[prediction_result.predicted_motion],
                 "confidence_score": prediction_result.confidence_score,
                 "is_match": prediction_result.is_match,
                 "status": prediction_result.status,

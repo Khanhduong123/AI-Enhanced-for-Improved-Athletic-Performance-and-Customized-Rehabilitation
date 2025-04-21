@@ -1,9 +1,11 @@
 from typing import List
 from fastapi import APIRouter, HTTPException, status
 from ..models.exercise import Exercise, ExerciseCreate, ExerciseUpdate
+from ..models.user import User
 from ..services.exercise_service import (
     create_exercise, get_exercise, update_exercise, 
-    get_patient_exercises, get_doctor_assigned_exercises, delete_exercise
+    get_patient_exercises, get_doctor_assigned_exercises, delete_exercise,
+    get_patients_assigned_by_doctor
 )
 
 router = APIRouter(prefix="/exercises", tags=["Exercises"])
@@ -49,4 +51,11 @@ async def get_exercises_by_doctor(doctor_id: str):
     """
     Get all exercises assigned by a specific doctor
     """
-    return await get_doctor_assigned_exercises(doctor_id) 
+    return await get_doctor_assigned_exercises(doctor_id)
+
+@router.get("/doctor/{doctor_id}/patients", response_model=List[User])
+async def get_doctor_patients(doctor_id: str):
+    """
+    Get all patients that a doctor has assigned exercises to
+    """
+    return await get_patients_assigned_by_doctor(doctor_id) 

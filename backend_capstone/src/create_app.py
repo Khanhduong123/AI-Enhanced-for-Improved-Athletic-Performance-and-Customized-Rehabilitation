@@ -1,5 +1,6 @@
 import logging
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
 from .v1.configs.swagger import swagger_config
@@ -53,6 +54,7 @@ def create_app():
     # Setup exception handlers
     setup_exception_handlers(app)
     
+    app.mount("/uploaded_videos", StaticFiles(directory="uploaded_videos"), name="uploaded_videos")
     # Add healthcheck endpoint
     @app.get("/health", tags=["Health"])
     async def health_check():

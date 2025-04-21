@@ -15,6 +15,8 @@ class UserBase(BaseModel):
     email: EmailStr
     full_name: str
     role: str = Field(..., description="Either 'Patient' or 'Doctor'")
+    specialization: Optional[str] = Field(None, description="Doctor's specialization, e.g. 'Physical Therapist'")
+    diagnosis: Optional[str] = Field(None, description="Patient's condition or diagnosis")
     
 class UserCreate(UserBase):
     password: str
@@ -42,6 +44,8 @@ class UserUpdate(BaseModel):
     email: Optional[EmailStr] = None
     full_name: Optional[str] = None
     password: Optional[str] = None
+    specialization: Optional[str] = None
+    diagnosis: Optional[str] = None
     
     class Config:
         json_encoders = {ObjectId: str} 
