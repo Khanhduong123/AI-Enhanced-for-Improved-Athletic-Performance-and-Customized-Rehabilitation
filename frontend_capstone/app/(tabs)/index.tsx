@@ -25,15 +25,15 @@ const log = (...args: any[]) => {
 // For iOS simulator, use localhost
 // For physical devices, use your actual IP address on your network
 const API_BASE_URL = Platform.select({
-  ios: 'http://localhost:7860',
-  android: 'http://10.0.2.2:7860', // Special IP for Android emulator to reach host machine
-  default: 'http://localhost:7860',
+  ios: 'http://192.168.68.104:7860',
+  android: 'http://192.168.68.104:7860', // Special IP for Android emulator to reach host machine
+  default: 'http://192.168.68.104:7860',
 });
 
 // Alternative API URL if you're testing on a physical device
 // Replace with your actual machine's IP address on your network
 // Example: const ALTERNATIVE_API_URL = 'http://192.168.1.100:7860';
-const ALTERNATIVE_API_URL = 'http://localhost:7860';
+const ALTERNATIVE_API_URL = 'http://192.168.68.104:7860';
 
 // Add a utility function to help with fallback API calls
 const fetchWithFallback = async (url: string, options: RequestInit = {}) => {
