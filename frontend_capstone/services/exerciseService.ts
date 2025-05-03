@@ -4,14 +4,14 @@ import { Platform } from 'react-native';
 // Thay đổi URL API để hỗ trợ cả local và remote environments
 // Trong môi trường thực tế, bạn nên sử dụng biến môi trường (environment variables)
 const API_BASE_URL = Platform.select({
-  ios: 'http://localhost:7860/api/v1',
-  android: 'http://10.0.2.2:7860/api/v1', // Special IP for Android emulator to reach host machine
-  default: 'http://localhost:7860/api/v1',
+  ios: 'http://192.168.68.104:7860/api/v1',
+  android: 'http://192.168.68.104:7860/api/v1', // Special IP for Android emulator to reach host machine
+  default: 'http://192.168.68.104:7860/api/v1',
 });
 
 // Alternative API URL if you're testing on a physical device
 // Replace with your actual machine's IP address on your network
-const ALTERNATIVE_API_URL = 'http://localhost:7860/api/v1';
+const ALTERNATIVE_API_URL = 'http://192.168.68.104:7860/api/v1';
 
 // Hàm giúp tạo ra một Promise với timeout
 const fetchWithTimeout = (url: string, options: RequestInit = {}, timeout = 10000) => {

@@ -113,8 +113,8 @@ async def predict_pose(
         motion_map = {
             "Sodatvuonlen": "Sờ Đất Vươn Lên",
             "Xemxaxemgan": "Xem Xa Xem Gần",
-            "Ngoithangbangtrengot": "Ngồi Thang Bằng Trên Gót",
-            "Dangchanraxanghiengminh": "Đang Chân Ra Xa Nghiêng Mình"
+            "Ngoithangbangtrengot": "Ngồi Thăng Bằng Trên Gót",
+            "Dangchanraxanghiengminh": "Dang Chân Ra Xa Nghiêng Mình"
         }
    
         # Return combined result with more detailed information

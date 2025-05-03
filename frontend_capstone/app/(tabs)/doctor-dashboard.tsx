@@ -9,7 +9,7 @@ import { useAuthStore } from '../../store/authStore';
 // API Configuration
 const API_BASE_URL = Platform.select({
   ios: 'http://localhost:7860',
-  android: 'http://10.0.2.2:7860', // Special IP for Android emulator to reach host machine
+  android: 'http://192.168.68.104:7860', // Special IP for Android emulator to reach host machine
   default: 'http://localhost:7860',
 });
 

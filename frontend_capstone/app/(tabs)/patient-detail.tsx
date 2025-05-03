@@ -115,7 +115,7 @@ export default function PatientDetail() {
       
       // Use fetchWithTimeout directly to avoid dependency issues
       // Update API URL to work with Android emulator
-      const API_BASE_URL = 'http://10.0.2.2:7860/api/v1'; // For Android emulator
+      const API_BASE_URL = 'http://192.168.68.104:7860/api/v1'; // For Android emulator
       // const API_BASE_URL = 'http://localhost:7860/api/v1'; // For web or iOS simulator
       
       const response = await fetchWithTimeout(

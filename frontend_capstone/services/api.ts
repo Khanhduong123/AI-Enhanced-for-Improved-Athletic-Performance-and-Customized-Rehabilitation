@@ -9,13 +9,13 @@ export const ensureValidUnicode = (text: string): string => {
 
 // API configuration based on platform
 const API_URL = Platform.select({
-  ios: 'http://192.168.2.11:7860/api/v1',
-  android: 'http://192.168.2.11:7860/api/v1', // Special IP for Android emulator to reach host machine
-  default: 'http://192.168.2.11:7860/api/v1', // Change this to your actual machine's IP
+  ios: 'http://192.168.68.104:7860/api/v1',
+  android: 'http://192.168.68.104:7860/api/v1', // Special IP for Android emulator to reach host machine
+  default: 'http://192.168.68.104:7860/api/v1', // Change this to your actual machine's IP
 });
 
 // Fallback in case primary API fails
-const FALLBACK_API_URL = 'http://192.168.2.11:7860/api/v1'; // Change this to your actual machine's IP
+const FALLBACK_API_URL = 'http://192.168.68.104:7860/api/v1'; // Change this to your actual machine's IP
 
 console.log('[API] Platform is:', Platform.OS);
 console.log('[API] API URL being used:', API_URL);
