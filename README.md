@@ -30,8 +30,6 @@ This is a full-stack exercise tracking system that includes:
 - Pydantic: Data validation
 - Python 3.10
 
----
-
 ### Setup Instructions
 
 #### Prerequisites
@@ -65,7 +63,7 @@ uvicorn main:app --reload
 
 The API will be available at `http://localhost:7860`
 
----
+
 
 ### API Documentation
 
@@ -74,7 +72,7 @@ Once the server is running, you can access the interactive API documentation at:
 - Swagger UI: `http://localhost:7860/docs`
 - ReDoc: `http://localhost:7860/redoc`
 
----
+
 ### API Endpoints
 
 #### User Management
