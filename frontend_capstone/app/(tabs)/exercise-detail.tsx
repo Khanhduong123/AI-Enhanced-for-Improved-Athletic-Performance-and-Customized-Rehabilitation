@@ -331,7 +331,7 @@ export default function ExerciseDetail() {
             <View style={styles.videoContainer}>
               <Video
                 ref={videoRef}
-                source={{ uri: `http://192.168.2.11:7860/${exercise.video.file_path}` }}
+                source={{ uri: `http://192.168.68.104:7860/${exercise.video.file_path}` }}
                 style={styles.video}
                 useNativeControls
                 resizeMode={ResizeMode.CONTAIN}

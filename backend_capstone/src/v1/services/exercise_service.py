@@ -185,8 +185,8 @@ async def get_patient_exercises(patient_id: str) -> List[Exercise]:
     motion_map = {
         "Sodatvuonlen": "Sờ Đất Vươn Lên",
         "Xemxaxemgan": "Xem Xa Xem Gần",
-        "Ngoithangbangtrengot": "Ngồi Thang Bằng Trên Gót",
-        "Dangchanraxanghiengminh": "Đang Chân Ra Xa Nghiêng Mình"
+        "Ngoithangbangtrengot": "Ngồi Thăng Bằng Trên Gót",
+        "Dangchanraxanghiengminh": "Dang Chân Ra Xa Nghiêng Mình"
     }
     async for exercise in cursor:
         exercise["name"] = motion_map[exercise["name"]]  # Thay đổi tên bài tập
