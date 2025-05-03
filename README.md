@@ -73,6 +73,58 @@ Once the server is running, you can access the interactive API documentation at:
 - ReDoc: `http://localhost:7860/redoc`
 
 
+### Database Schema
+
+#### Users Collection
+
+- `_id`: ObjectId (Unique identifier)  
+- `email`: String (Unique email address)  
+- `full_name`: String  
+- `role`: String ("Doctor" or "Patient")  
+- `hashed_password`: String  
+- `created_at`: DateTime  
+- `updated_at`: DateTime  
+
+#### Exercises Collection
+
+- `_id`: ObjectId  
+- `name`: String  
+- `description`: String  
+- `assigned_by`: ObjectId  
+- `assigned_to`: ObjectId  
+- `assigned_date`: DateTime  
+- `due_date`: DateTime (Optional)  
+- `status`: String ("Pending", "Completed", "Not Completed")  
+- `created_at`: DateTime  
+- `updated_at`: DateTime  
+
+#### Videos Collection
+
+- `_id`: ObjectId  
+- `patient_id`: ObjectId  
+- `exercise_id`: ObjectId  
+- `file_path`: String  
+- `file_name`: String  
+- `file_size`: Number (bytes)  
+- `content_type`: String  
+- `upload_date`: DateTime  
+- `status`: String ("Uploaded", "Processed", "Failed")  
+- `created_at`: DateTime  
+- `updated_at`: DateTime  
+
+#### Predictions Collection
+
+- `_id`: ObjectId  
+- `video_id`: ObjectId  
+- `exercise_id`: ObjectId  
+- `patient_id`: ObjectId  
+- `predicted_motion`: String  
+- `confidence_score`: Number (0-1)  
+- `model_name`: String  
+- `is_match`: Boolean  
+- `raw_results`: Object  
+- `created_at`: DateTime  
+
 ### API Endpoints
 
 #### User Management
