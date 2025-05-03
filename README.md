@@ -1,6 +1,10 @@
 
 # Exercise Tracker Application
 
+## Project Description
+This project develops an application that utilizes AI to help patients perform physical therapy exercises correctly at home. The system uses AI models to recognize movements from videos, evaluate accuracy, and provide feedback to support training and recovery.
+
+
 This is a full-stack exercise tracking system that includes:
 
 - A **FastAPI-based backend** for user, exercise, and video management with AI-based motion analysis
@@ -24,7 +28,7 @@ This is a full-stack exercise tracking system that includes:
 - MongoDB: NoSQL database for flexible schema
 - Motor: Async MongoDB driver
 - Pydantic: Data validation
-- Python 3.8+
+- Python 3.10
 
 ---
 
@@ -32,7 +36,7 @@ This is a full-stack exercise tracking system that includes:
 
 #### Prerequisites
 
-- Python 3.8+
+- Python 3.10
 - MongoDB
 
 #### Environment Variables
@@ -125,14 +129,6 @@ In the output, you'll find options to open the app in a:
 - [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
 - [Expo Go](https://expo.dev/go) — a limited sandbox for trying out app development with Expo
 
----
-
-### Start Developing
-
-You can begin development by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
----
-
 ### Reset Project
 
 To reset and start fresh:
@@ -142,17 +138,6 @@ npm run reset-project
 ```
 
 This command will move the starter code to the **app-example** directory and create a blank **app** directory.
-
----
-
-### Learn More
-
-- [Expo documentation](https://docs.expo.dev/)
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/)
-- [Expo on GitHub](https://github.com/expo/expo)
-- [Discord community](https://chat.expo.dev)
-
----
 
 ## License
 
