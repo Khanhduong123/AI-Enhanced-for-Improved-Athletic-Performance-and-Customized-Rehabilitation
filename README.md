@@ -185,7 +185,7 @@ npm run reset-project
 This command will move the starter code to the **app-example** directory and create a blank **app** directory.
 
 ## Contact
-For any inquiries, please free contact us at: khanhdbse172248@fpt.edu.vn
+For any inquiries, please free contact us at: khanhbaoduong789@gmail.com
 
 ## License
 MIT
