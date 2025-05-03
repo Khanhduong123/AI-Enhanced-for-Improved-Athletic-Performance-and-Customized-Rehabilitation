@@ -1,67 +1,159 @@
-# AI-Enhanced-for-Improved-Athletic-Performance-and-Customized-Rehabilitation
 
-## Project Description
-This project develops an application that utilizes AI to help patients perform physical therapy exercises correctly at home. The system uses AI models to recognize movements from videos, evaluate accuracy, and provide feedback to support training and recovery.
+# Exercise Tracker Application
 
-## Folder Structure
+This is a full-stack exercise tracking system that includes:
 
-### 1. **ai_model_capstone**
-This folder contains AI model-related components:
-- **checkpoints/**: Stores trained model weights.
-  - `gcn/finetune`: Fine-tuned weights for the GCN model.
-  - `gcn/pretrain`: Pretrained weights for the GCN model.
-  - `spoter/finetune`: Fine-tuned weights for the Spoter model.
-  - `spoter/pretrain`: Pretrained weights for the Spoter model.
-- **config/**: Configuration settings for the AI model.
-- **core/**: Core components of the AI system.
-- **data/**: Training and evaluation data for AI models.
-  - `keypoints/`: Stores skeleton keypoint data.
-  - `processed_video/`: Processed videos.
-  - `raw_video/`: Raw unprocessed videos.
-- **images/**: Contains images related to the project.
-- **notebook/**: Jupyter notebooks supporting research and model training.
-- **summary/**: Summary of model training results.
+- A **FastAPI-based backend** for user, exercise, and video management with AI-based motion analysis
+- A **React Native frontend** using **Expo** for doctors and patients to interact with the system
 
-### 2. **backend_capstone**
-Contains the backend API for data processing and interaction with the AI model.
-- **src/v1/**: Main backend code.
-  - `configs/`: API configurations and checkpoint management.
-  - `models/`: Defines AI models used in the backend.
-  - `providers/`: Provides supporting components for the API.
-  - `routers/`: Defines API endpoints.
-  - `services/`: Handles backend business logic.
-- **temp_videos/**: Temporarily stores videos before processing.
+---
 
-### 3. **frontend_capstone**
-User interface for patients to perform therapy exercises and receive AI-generated feedback.
+## 🧠 Backend – FastAPI Server
 
-## Installation
-### System Requirements
-- Python 3.10+
-- Node.js 16+
-- FastAPI
-- React.js
-- Mediapipe 
+### Features
 
-### Backend Installation
-```sh
-cd backend_capstone
+- User Management (Doctors and Patients)
+- Exercise Assignment
+- Video Upload and Processing
+- AI-powered Motion Analysis
+- Progress Tracking
+
+### Tech Stack
+
+- FastAPI: High-performance web framework
+- MongoDB: NoSQL database for flexible schema
+- Motor: Async MongoDB driver
+- Pydantic: Data validation
+- Python 3.8+
+
+---
+
+### Setup Instructions
+
+#### Prerequisites
+
+- Python 3.8+
+- MongoDB
+
+#### Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```
+MONGO_URI=mongodb://localhost:27017
+DB_NAME=exercise_tracker_db
+```
+
+#### Installation
+
+1. Clone the repository
+2. Install dependencies:
+
+```bash
 pip install -r requirements.txt
-uvicorn src.v1.main:app --reload
 ```
 
-### Frontend Installation
-```sh
-cd frontend_capstone
+3. Start the server:
+
+```bash
+uvicorn main:app --reload
+```
+
+The API will be available at `http://localhost:7860`
+
+---
+
+### API Documentation
+
+Once the server is running, you can access the interactive API documentation at:
+
+- Swagger UI: `http://localhost:7860/docs`
+- ReDoc: `http://localhost:7860/redoc`
+
+---
+### API Endpoints
+
+#### User Management
+
+- `POST /api/v1/users/`: Register a new user  
+- `POST /api/v1/users/login`: Login  
+- `GET /api/v1/users/{user_id}`: Get user profile  
+- `PUT /api/v1/users/{user_id}`: Update user profile  
+
+#### Exercise Management
+
+- `POST /api/v1/exercises/`: Create a new exercise  
+- `GET /api/v1/exercises/{exercise_id}`: Get exercise details  
+- `PUT /api/v1/exercises/{exercise_id}`: Update exercise  
+- `GET /api/v1/exercises/patient/{patient_id}`: Get patient's exercises  
+- `GET /api/v1/exercises/doctor/{doctor_id}`: Get doctor's assigned exercises  
+
+#### Video Management
+
+- `POST /api/v1/predict/`: Upload and analyze a video  
+- `GET /api/v1/videos/{video_id}`: Get video with prediction  
+- `GET /api/v1/videos/patient/{patient_id}`: Get patient's videos  
+- `GET /api/v1/predict/exercise/{exercise_id}/videos`: Get videos for an exercise  
+
+---
+
+## 📱 Frontend – React Native with Expo
+
+Welcome to your Expo app 👋  
+This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+
+---
+
+### Get started
+
+1. Install dependencies
+
+```bash
 npm install
-npm start
 ```
 
-## Usage Guide
-1. Start the backend and frontend.
-2. Upload an exercise video to the system.
-3. AI analyzes and evaluates the movement.
-4. Users receive feedback on accuracy and necessary corrections.
+2. Start the app
 
-## Contact
-For any inquiries, please free contact us at: khanhdbse172248@fpt.edu.vn
+```bash
+npx expo start
+```
+
+In the output, you'll find options to open the app in a:
+
+- [Development build](https://docs.expo.dev/develop/development-builds/introduction/)
+- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go) — a limited sandbox for trying out app development with Expo
+
+---
+
+### Start Developing
+
+You can begin development by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+---
+
+### Reset Project
+
+To reset and start fresh:
+
+```bash
+npm run reset-project
+```
+
+This command will move the starter code to the **app-example** directory and create a blank **app** directory.
+
+---
+
+### Learn More
+
+- [Expo documentation](https://docs.expo.dev/)
+- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/)
+- [Expo on GitHub](https://github.com/expo/expo)
+- [Discord community](https://chat.expo.dev)
+
+---
+
+## License
+
+MIT
