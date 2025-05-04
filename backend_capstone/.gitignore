@@ -1,5 +1,5 @@
 backend_capstone/
 __pycache__/
 temp_videos/
-
+uploaded_videos/
 .env
