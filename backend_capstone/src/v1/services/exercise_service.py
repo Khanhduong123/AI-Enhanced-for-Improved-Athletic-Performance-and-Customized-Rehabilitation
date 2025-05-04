@@ -89,35 +89,36 @@ async def create_exercise(exercise: ExerciseCreate) -> Exercise:
     return Exercise(**created_exercise)
 
 async def get_exercise(exercise_id: str) -> Exercise:
-    """Get an exercise by ID (handles string and ObjectId)"""
+    """Get exercise and populate video with $lookup."""
     collection = MongoDB.get_collection(COLLECTION_NAME)
-    
-    # 1. Thử tìm bằng string ID
-    print(f"DEBUG EXERCISE: Searching with string ID: '{exercise_id}'")
-    exercise = await collection.find_one({"_id": exercise_id})
-    if exercise:
-        print("DEBUG EXERCISE: Found by string ID")
-        return Exercise(**exercise)
 
-    # 2. Thử tìm bằng ObjectId nếu hợp lệ
-    if ObjectId.is_valid(exercise_id):
-        print(f"DEBUG EXERCISE: String ID not found, trying ObjectId: {exercise_id}")
-        try:
-            obj_id = ObjectId(exercise_id)
-            exercise = await collection.find_one({"_id": obj_id})
-            if exercise:
-                print("DEBUG EXERCISE: Found by ObjectId")
-                return Exercise(**exercise)
-        except Exception as e:
-            print(f"DEBUG EXERCISE: Error searching with ObjectId: {str(e)}")
+    match_stage = {"$match": {"_id": exercise_id}}
+    lookup_stage = {
+        "$lookup": {
+            "from": "videos",
+            "localField": "video_id",
+            "foreignField": "_id",
+            "as": "video"
+        }
+    }
+    unwind_stage = {
+        "$unwind": {
+            "path": "$video",
+            "preserveNullAndEmptyArrays": True
+        }
+    }
 
-    # Không tìm thấy
-    print(f"DEBUG EXERCISE: Not found with ID: {exercise_id}")
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Exercise not found"
-    )
+    pipeline = [match_stage, lookup_stage, unwind_stage]
+    cursor = collection.aggregate(pipeline)
+    exercise = await cursor.to_list(length=1)
 
+    if not exercise:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Exercise not found"
+        )
+
+    return Exercise(**exercise[0])
 async def update_exercise(exercise_id: str, exercise_update: ExerciseUpdate) -> Exercise:
     """Update an exercise (handles string and ObjectId)"""
     collection = MongoDB.get_collection(COLLECTION_NAME)
@@ -171,27 +172,45 @@ async def delete_exercise(exercise_id: str) -> None:
         )
 
 async def get_patient_exercises(patient_id: str) -> List[Exercise]:
-    """Get all exercises assigned to a patient (handles string/ObjectId ID)"""
+    """Get all exercises assigned to a patient and populate videos."""
     collection = MongoDB.get_collection(COLLECTION_NAME)
-    exercises = []
-    
-    # Xây dựng query filter cho patient_id
-    filter_query = {"assigned_to": patient_id}
-    if ObjectId.is_valid(patient_id):
-        filter_query = {"$or": [{"assigned_to": patient_id}, {"assigned_to": ObjectId(patient_id)}]}
 
-    print(f"DEBUG EXERCISE: Get patient exercises filter: {filter_query}")
-    cursor = collection.find(filter_query).sort("assigned_date", DESCENDING)
+    match_filter = {"assigned_to": patient_id}
+    
+    match_filter = {"$or": [{"assigned_to": patient_id}, {"assigned_to": patient_id}]}
+
+    print(f"DEBUG EXERCISE: Patient filter: {match_filter}")
+
+    pipeline = [
+        {"$match": match_filter},
+        {"$sort": {"assigned_date": -1}},
+        {"$lookup": {
+            "from": "videos",              # Tên collection videos
+            "localField": "video_id",       # Field trong exercises
+            "foreignField": "_id",          # Field trong videos
+            "as": "video"                   # Đặt tên cho video sau khi join
+        }},
+        {"$unwind": {
+            "path": "$video",
+            "preserveNullAndEmptyArrays": True
+        }}
+    ]
+
+    cursor = collection.aggregate(pipeline)
+
     motion_map = {
         "Sodatvuonlen": "Sờ Đất Vươn Lên",
         "Xemxaxemgan": "Xem Xa Xem Gần",
-        "Ngoithangbangtrengot": "Ngồi Thang Bằng Trên Gót",
-        "Dangchanraxanghiengminh": "Đang Chân Ra Xa Nghiêng Mình"
+        "Ngoithangbangtrengot": "Ngồi Thăng Bằng Trên Gót",
+        "Dangchanraxanghiengminh": "Dang Chân Ra Xa Nghiêng Mình"
     }
+
+    exercises = []
     async for exercise in cursor:
-        exercise["name"] = motion_map[exercise["name"]]  # Thay đổi tên bài tập
+        if exercise.get("name") in motion_map:
+            exercise["name"] = motion_map[exercise["name"]]
         exercises.append(Exercise(**exercise))
-    
+
     return exercises
 
 async def get_doctor_assigned_exercises(doctor_id: str) -> List[Exercise]:

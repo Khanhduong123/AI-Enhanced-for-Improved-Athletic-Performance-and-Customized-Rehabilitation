@@ -1,5 +1,5 @@
 from typing import Optional, List, Annotated
-from pydantic import BaseModel, Field, EmailStr, BeforeValidator
+from pydantic import BaseModel, Field, EmailStr, BeforeValidator, validator
 from datetime import datetime
 from bson import ObjectId
 
@@ -16,7 +16,12 @@ class UserBase(BaseModel):
     full_name: str
     role: str = Field(..., description="Either 'Patient' or 'Doctor'")
     specialization: Optional[str] = Field(None, description="Doctor's specialization, e.g. 'Physical Therapist'")
-    diagnosis: Optional[str] = Field(None, description="Patient's condition or diagnosis")
+    
+    @validator('specialization')
+    def validate_specialization(cls, v, values):
+        if 'role' in values and values['role'].lower() == 'doctor' and not v:
+            raise ValueError('Specialization is required for doctors')
+        return v
     
 class UserCreate(UserBase):
     password: str
@@ -45,7 +50,6 @@ class UserUpdate(BaseModel):
     full_name: Optional[str] = None
     password: Optional[str] = None
     specialization: Optional[str] = None
-    diagnosis: Optional[str] = None
     
     class Config:
         json_encoders = {ObjectId: str} 

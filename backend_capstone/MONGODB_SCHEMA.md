@@ -21,25 +21,21 @@ The database is organized into four main collections, each with specific purpose
 
 ```json
 {
-  "_id": ObjectId,
-  "email": String,
-  "full_name": String,
-  "role": String,  // "Doctor" or "Patient"
-  "hashed_password": String,
-  "created_at": DateTime,
-  "updated_at": DateTime
+  "_id": String,           // User ID (string, not ObjectId)
+  "email": String,         // User's email (unique)
+  "full_name": String,     // User's full name
+  "role": String,          // "Doctor" or "Patient" (case-insensitive, may have typo in legacy data)
+  "hashed_password": String, // SHA-256 hash of password
+  "created_at": Date,
+  "updated_at": Date
 }
 ```
 
 **Indexes**:
 
-- `email`: Unique index for fast user lookup by email
-- `role`: Index for filtering users by role
-
-**Security Considerations**:
-
-- Passwords are hashed and never stored in plain text
-- Role field provides basis for access control
+- `email` (unique)
+- `role`
+- `created_at`
 
 ### 2. Exercises Collection
 
@@ -49,26 +45,26 @@ The database is organized into four main collections, each with specific purpose
 
 ```json
 {
-  "_id": ObjectId,
-  "name": String,
-  "description": String,
-  "assigned_by": ObjectId,  // Reference to doctor user
-  "assigned_to": ObjectId,  // Reference to patient user
-  "assigned_date": DateTime,
-  "due_date": DateTime,
-  "status": String,  // "Pending", "Completed", "Not Completed"
-  "created_at": DateTime,
-  "updated_at": DateTime
+  "_id": String,             // Exercise ID (string, not ObjectId)
+  "name": String,            // Exercise name
+  "description": String,     // Exercise description
+  "assigned_by": String,     // User ID of doctor (string)
+  "assigned_to": String,     // User ID of patient (string)
+  "assigned_date": Date,
+  "due_date": Date,
+  "status": String,          // "Pending", "Completed", "Not Completed"
+  "created_at": Date,
+  "updated_at": Date
 }
 ```
 
 **Indexes**:
 
-- `assigned_by`: Index for fast retrieval of exercises by doctor
-- `assigned_to`: Index for fast retrieval of exercises by patient
-- `status`: Index for filtering exercises by status
-- `assigned_date`: Index for time-based queries
-- Compound index `{assigned_to, assigned_date}`: For patient exercise history
+- `assigned_by`
+- `assigned_to`
+- `status`
+- `assigned_date`
+- Compound: `{assigned_to, assigned_date}`
 
 ### 3. Videos Collection
 
@@ -78,26 +74,26 @@ The database is organized into four main collections, each with specific purpose
 
 ```json
 {
-  "_id": ObjectId,
-  "patient_id": ObjectId,  // Reference to patient user
-  "exercise_id": ObjectId,  // Reference to exercise
-  "file_path": String,      // Path to stored video file
+  "_id": String,             // Video ID (string, not ObjectId)
+  "patient_id": String,      // User ID of patient (string)
+  "exercise_id": String,     // Exercise ID (string)
+  "file_path": String,       // Path to stored video file
   "file_name": String,
-  "file_size": Number,      // Size in bytes
-  "content_type": String,   // MIME type
-  "upload_date": DateTime,
-  "status": String,         // "Uploaded", "Procsesed", "Failed"
-  "created_at": DateTime,
-  "updated_at": DateTime
+  "file_size": Number,
+  "content_type": String,
+  "upload_date": Date,
+  "status": String,          // "Uploaded", "Processed", "Failed"
+  "created_at": Date,
+  "updated_at": Date
 }
 ```
 
 **Indexes**:
 
-- `patient_id`: Index for retrieving videos by patient
-- `exercise_id`: Index for retrieving videos by exercise
-- `upload_date`: Index for time-based queries
-- Compound index `{exercise_id, upload_date}`: For exercise video history
+- `patient_id`
+- `exercise_id`
+- `upload_date`
+- Compound: `{exercise_id, upload_date}`
 
 ### 4. Predictions Collection
 
@@ -107,32 +103,32 @@ The database is organized into four main collections, each with specific purpose
 
 ```json
 {
-  "_id": ObjectId,
-  "video_id": ObjectId,     // Reference to video
-  "exercise_id": ObjectId,  // Reference to exercise
-  "patient_id": ObjectId,   // Reference to patient user
-  "predicted_motion": String,
-  "confidence_score": Number, // 0-1 range
-  "is_match": Boolean,      // Whether prediction matches exercise
-  "model_name": String,     // AI model used
-  "status": String,         // "Completed", "Not Completed", "Pending", "Failed"
-  "raw_results": Object,    // Raw AI model output
-  "feedback": String,       // Optional doctor feedback
-  "feedback_date": DateTime, // When feedback was provided
-  "created_at": DateTime,
-  "updated_at": DateTime
+  "_id": String,             // Prediction ID (string, not ObjectId)
+  "video_id": String,        // Video ID (string)
+  "exercise_id": String,     // Exercise ID (string)
+  "patient_id": String,      // User ID of patient (string)
+  "predicted_motion": String,// AI-predicted motion label
+  "confidence_score": Number,// Float in [0, 1]
+  "is_match": Boolean,       // Whether prediction matches assigned exercise
+  "model_name": String,      // Name of AI model used
+  "status": String,          // "Completed", "Not Completed", "Pending", "Failed"
+  "raw_results": Object,     // Raw AI model output (dict)
+  "feedback": String,        // Optional doctor feedback
+  "feedback_date": Date,     // When feedback was provided
+  "created_at": Date,
+  "updated_at": Date
 }
 ```
 
 **Indexes**:
 
-- `video_id`: Unique index for one-to-one relationship with videos
-- `patient_id`: Index for retrieving predictions by patient
-- `exercise_id`: Index for retrieving predictions by exercise
-- `created_at`: Index for time-based queries
-- `status`: Index for filtering by prediction status
-- Compound index `{patient_id, created_at}`: For patient prediction history
-- Compound index `{exercise_id, created_at}`: For exercise prediction history
+- `video_id` (unique)
+- `patient_id`
+- `exercise_id`
+- `created_at`
+- `status`
+- Compound: `{patient_id, created_at}`
+- Compound: `{exercise_id, created_at}`
 
 ## Relationships
 
@@ -189,7 +185,7 @@ The MongoDB schema uses a referenced approach (normalized) for relationships bet
    - Doctors can only see data for patients assigned to them
 
 2. **Data Encryption**:
-   - Passwords hashed for security
+   - Passwords hashed using SHA-256
    - Environment variables for sensitive configuration
 
 ## Design Decisions

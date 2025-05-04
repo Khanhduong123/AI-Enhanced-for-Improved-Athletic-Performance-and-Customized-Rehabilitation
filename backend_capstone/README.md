@@ -120,28 +120,106 @@ Stores AI predictions:
 
 ## API Endpoints
 
-### User Management
+### User Endpoints
 
-- `POST /api/v1/users/`: Register a new user
-- `POST /api/v1/users/login`: Login
-- `GET /api/v1/users/{user_id}`: Get user profile
-- `PUT /api/v1/users/{user_id}`: Update user profile
+- `POST /api/v1/users/register` - Register new user
+- `POST /api/v1/users/login` - User login
+- `GET /api/v1/users/me` - Get current user info
+- `GET /api/v1/users/` - List users (with pagination)
+- `GET /api/v1/users/{user_id}` - Get specific user
 
-### Exercise Management
+### Exercise Endpoints
 
-- `POST /api/v1/exercises/`: Create a new exercise
-- `GET /api/v1/exercises/{exercise_id}`: Get exercise details
-- `PUT /api/v1/exercises/{exercise_id}`: Update exercise
-- `GET /api/v1/exercises/patient/{patient_id}`: Get patient's exercises
-- `GET /api/v1/exercises/doctor/{doctor_id}`: Get doctor's assigned exercises
+- `POST /api/v1/exercises/` - Create new exercise
+- `GET /api/v1/exercises/` - List exercises (with pagination)
+- `GET /api/v1/exercises/{exercise_id}` - Get specific exercise
+- `GET /api/v1/exercises/patient/{patient_id}` - Get patient's exercises
+- `GET /api/v1/exercises/doctor/{doctor_id}` - Get doctor's assigned exercises
 
-### Video Management
+### Video Endpoints
 
-- `POST /api/v1/predict/`: Upload and analyze a video
-- `GET /api/v1/videos/{video_id}`: Get video with prediction
-- `GET /api/v1/videos/patient/{patient_id}`: Get patient's videos
-- `GET /api/v1/predict/exercise/{exercise_id}/videos`: Get videos for an exercise
+- `POST /api/v1/videos/upload` - Upload exercise video
+- `GET /api/v1/videos/` - List videos (with pagination)
+- `GET /api/v1/videos/{video_id}` - Get specific video
+- `GET /api/v1/videos/exercise/{exercise_id}` - Get videos for exercise
+- `GET /api/v1/videos/patient/{patient_id}` - Get patient's videos
+
+### Prediction Endpoints
+
+- `POST /api/v1/predictions/` - Create prediction
+- `GET /api/v1/predictions/` - List predictions (with pagination)
+- `GET /api/v1/predictions/{prediction_id}` - Get specific prediction
+- `GET /api/v1/predictions/video/{video_id}` - Get prediction for video
+- `GET /api/v1/predictions/exercise/{exercise_id}` - Get predictions for exercise
+- `GET /api/v1/predictions/patient/{patient_id}` - Get patient's predictions
+- `PUT /api/v1/predictions/{prediction_id}/feedback` - Add doctor feedback
+
+## Security Features
+
+- Password hashing using SHA-256
+- JWT-based authentication
+- Role-based access control (Doctor/Patient)
+- File upload size limits
+- Input validation using Pydantic models
+
+## Development Guidelines
+
+- All IDs are strings (not ObjectId)
+- Timestamps are stored in ISO format
+- File uploads are stored locally
+- AI model integration is handled through custom service
+- Pagination is implemented for list endpoints
+
+## Error Handling
+
+- Standard HTTP status codes
+- Detailed error messages
+- Validation errors for invalid inputs
+- File upload error handling
+- AI processing error handling
+
+## Testing
+
+- API endpoints can be tested using FastAPI's built-in Swagger UI
+- Available at `/docs` when server is running
+
+## Documentation
+
+- API documentation available at `/docs`
+- MongoDB schema documentation in `MONGODB_SCHEMA.md`
+- Code comments and docstrings for detailed implementation
+
+## Environment Variables
+
+Additional environment variables to configure:
+
+```
+JWT_SECRET_KEY=your-secret-key
+UPLOAD_DIR=./uploads
+MAX_UPLOAD_SIZE=10485760  # 10MB in bytes
+```
+
+## Dependencies
+
+Key dependencies from requirements.txt:
+
+- fastapi
+- uvicorn
+- motor
+- pydantic
+- python-jose[cryptography]
+- passlib[bcrypt]
+- python-multipart
+- aiofiles
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## License
 
-MIT
+This project is licensed under the MIT License - see the LICENSE file for details.

@@ -108,7 +108,7 @@ def predict_action(
     model: torch.nn.Module, 
     model_name: str, 
     classes: List[str]
-) -> dict:
+) -> dict:  
     """
     Given a video, extract skeleton keypoints, run through the specified model, 
     and return the predicted class label.

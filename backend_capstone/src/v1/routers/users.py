@@ -26,13 +26,10 @@ async def login(email: str, password: str):
     }
     
     # Add specialization for doctors
-    if user.specialization and (user.role.lower() == "doctor" or user.role.lower() == "docter"):
+    if user.role.lower() == "doctor":
         response["specialization"] = user.specialization
         
-    # Add diagnosis for patients
-    if user.diagnosis and (user.role.lower() == "patient"):
-        response["diagnosis"] = user.diagnosis
-        
+   
     return response
 
 @router.get("/patients", response_model=List[User])

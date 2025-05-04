@@ -12,6 +12,7 @@ from ..models.prediction import Prediction, PredictionStatus
 from ..models.video import Video
 from ..core.pagination import PaginationParams, get_pagination_params
 from datetime import datetime
+from ..configs.app_config import settings
 
 # Create the APIRouter
 router = APIRouter(prefix="/predict", tags=["Prediction & Video Analysis"])
@@ -71,9 +72,11 @@ async def predict_pose(
         )
     
     # Create a unique filename
-    temp_filename = f"{uuid.uuid4()}.mp4"
-    temp_filepath = os.path.join("temp_videos", temp_filename)
-    os.makedirs("temp_videos", exist_ok=True)
+    original_filename = video_file.filename
+    extension = original_filename.split(".")[-1] if "." in original_filename else "mp4"
+    filename = f"{uuid.uuid4()}_{patient_id}.{extension}"
+    filepath = os.path.join(settings.UPLOAD_DIR, filename)
+    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
 
     try:
         # Save the uploaded file
@@ -86,17 +89,15 @@ async def predict_pose(
                 detail="File size exceeds the 50MB limit"
             )
         
-        with open(temp_filepath, "wb") as f:
+        with open(filepath, "wb") as f:
             f.write(file_content)
 
-        # Save permanent video file
-        file_path = await save_video_file(video_file, patient_id)
-        
+
         # Create video record in database
         video = await create_video_record(
             patient_id=patient_id,
             exercise_id=exercise_id,
-            file_path=file_path,
+            file_path=filepath,
             file_name=video_file.filename,
             file_size=len(file_content),
             content_type=video_file.content_type
@@ -104,7 +105,7 @@ async def predict_pose(
 
         # Run inference and create prediction record
         prediction_result = await analyze_video(
-            video_path=temp_filepath,
+            video_path=filepath,
             exercise_id=exercise_id,
             patient_id=patient_id,
             video_id=str(video.id)
@@ -149,13 +150,7 @@ async def predict_pose(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error processing video: {str(e)}"
         )
-    finally:
-        # Clean up temporary file
-        if os.path.exists(temp_filepath):
-            try:
-                os.remove(temp_filepath)
-            except Exception as e:
-                print(f"Failed to remove temporary file: {str(e)}")
+
 
 @router.get("/exercise/{exercise_id}/videos", response_model=List[Dict[str, Any]])
 async def get_videos_for_exercise(

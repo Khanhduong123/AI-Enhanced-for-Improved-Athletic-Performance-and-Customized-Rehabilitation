@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from .user import PyObjectId
 from bson import ObjectId
+from .video import Video
 
 class ExerciseBase(BaseModel):
     name: str
@@ -11,6 +12,7 @@ class ExerciseBase(BaseModel):
     assigned_to: PyObjectId = Field(..., description="Patient ID who should perform this exercise")
     assigned_date: datetime = Field(default_factory=datetime.utcnow)
     due_date: Optional[datetime] = None
+    video_id: Optional[str] = None  
     
 class ExerciseCreate(ExerciseBase):
     pass
@@ -30,6 +32,7 @@ class Exercise(ExerciseBase):
     status: str
     created_at: datetime
     updated_at: datetime
+    video: Optional[Video] = None
     
     class Config:
         populate_by_name = True

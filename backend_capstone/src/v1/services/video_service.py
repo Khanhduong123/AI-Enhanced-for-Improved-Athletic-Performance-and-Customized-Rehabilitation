@@ -70,11 +70,21 @@ async def create_video_record(
         
         # Insert into database
         result = await collection.insert_one(video_in_db.dict(by_alias=True))
-        
+  
         # Get the created video
         created_video = await collection.find_one({"_id": result.inserted_id})
         if not created_video:
             raise DatabaseOperationError("Failed to retrieve created video record")
+        
+        # Now update the corresponding exercise
+        exercise_collection = MongoDB.get_collection("exercises")  # <- assume collection name
+        update_result = await exercise_collection.update_one(
+            {"_id": exercise_id},
+            {"$set": {"video_id": result.inserted_id}}
+        )
+        
+        if update_result.modified_count == 0:
+            raise Data
         
         logger.info(f"Video record created: {result.inserted_id}")
         return Video(**created_video)

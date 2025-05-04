@@ -15,3 +15,5 @@ ai_model_capstone/notebook/*
 ai_model_capstone/test/Oppo/*
 ai_model_capstone/test/error/*
 ai_model_capstone/test/keypoints/*
+node_modules
+node_modules
