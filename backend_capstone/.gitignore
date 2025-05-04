@@ -2,4 +2,6 @@ backend_capstone/
 __pycache__/
 temp_videos/
 
-.env
+.env/
+
+uploaded_videos/
